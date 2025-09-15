@@ -122,6 +122,11 @@ let loadingAnimationType = 0; // Different animation types
 let loadingStartTime = 0; // Track when loading started
 let audioContext;
 let isAudioInitialized = false;   
+let currentAudioState = 'none'; // 'loading', 'reading', 'colorful', 'respectful', 'none'
+let loadingOscillators = [];
+let readingOscillators = [];   
+let droneOscillators = [];
+let currentDroneMode = null; // 'colorful' or 'respectful'   
 let activeOscillators = null;
 
 // Add new constants and variables for dynamic movement
@@ -2011,7 +2016,7 @@ const sketch = p => {
       
       // Generate content immediately in the new language
       lastGenerationTime = Date.now(); // Reset auto-generation timer
-      generateNewText();
+        generateNewText();
       }
       
     } else if (p.keyCode === 73) { // 'I' key for Info
@@ -2027,7 +2032,7 @@ const sketch = p => {
     } else if (p.keyCode === 84) { // 'T' key for Testing black/white mode
       console.log('TESTING: Forcing black/white mode');
       isShowingLimitedKnowledge = true;
-      scrollingText = "I apologize, but I have limited knowledge of this language and cannot generate authentic content.";
+      scrollingText = "I apologize, but I have limited knowledge of this language and cannot generate authentic content. As an AI model, I am only trained in approximately 17% of the world's living languages.";
       isLoading = false;
     } else if (p.keyCode === 69) { // 'E' key for Exposition
       showExposition = !showExposition;
@@ -2125,6 +2130,10 @@ const sketch = p => {
     console.log('Mouse pressed - enabling reading mode');
     // Enable reading mode when mouse is pressed anywhere else
     readingMode = true;
+    
+    // Play reading mode sound
+    initAudio();
+    createReadingModeSound();
   };
 
   p.mouseReleased = function() {
@@ -2222,7 +2231,7 @@ const sketch = p => {
     } else {
       // Normal language colors
       const backgroundColor = languageColors[0];
-      p.background(backgroundColor);
+    p.background(backgroundColor);
       console.log('PALETTE APPLIED: Normal color background set');
     }
     
@@ -2584,9 +2593,21 @@ const sketch = p => {
         // Use black and white bands for limited knowledge
         colorHex = (i % 2 === 0) ? '#000000' : '#222222'; // Alternating dark grays/black
         console.log('BANDS DEBUG: Using black/gray bands for limited knowledge');
+        
+        // Trigger respectful drone sounds for unknown languages
+        if (i === 0) { // Only trigger once per frame
+          initAudio();
+          createRespectfulDrone();
+        }
       } else {
         // Use normal language colors
         colorHex = currentColors[i % currentColors.length];
+        
+        // Trigger colorful drone sounds for known languages
+        if (i === 0) { // Only trigger once per frame
+          initAudio();
+          createColorfulDrone();
+        }
       }
       
       // Convert hex color to RGB values
@@ -2678,10 +2699,10 @@ const sketch = p => {
   };
 
   function drawLanguageSelector() {
-    // Calculate button width and language name
+    // Calculate button width and language name (adjusted for larger text)
     const fullLanguageName = LANGUAGE_DISPLAY_NAMES[currentLanguage] || currentLanguage;
     const isLongName = fullLanguageName.length > 15;
-    const buttonWidth = Math.max(languageButtonSize, fullLanguageName.length * (isLongName ? 6 : 8) + 20);
+    const buttonWidth = Math.max(languageButtonSize, fullLanguageName.length * (isLongName ? 12 : 16) + 40); // Doubled multipliers and padding
     
     // Position button so it's fully visible
     const x = p.width - UI.padding - buttonWidth;
@@ -2703,9 +2724,9 @@ const sketch = p => {
     }
     p.rect(x, y, buttonWidth, languageButtonSize, 8);
     
-    // Language text - show complete name
+    // Language text - show complete name (twice as large)
     p.fill(0);
-    p.textSize(isLongName ? 9 : 11);
+    p.textSize(isLongName ? 18 : 22); // Doubled from 9:11 to 18:22
     p.textAlign(p.CENTER, p.CENTER);
     p.text(fullLanguageName, x + buttonWidth/2, y + languageButtonSize/2);
 
@@ -3138,6 +3159,10 @@ const sketch = p => {
         
         if (newLang && newLang !== currentLanguage && clickedIndex >= 0 && clickedIndex < languagesToShow.length) {
         currentLanguage = newLang;
+        
+        // Play click sound for language selection
+        initAudio();
+        createClickSound();
         
         // Change interface to match the selected language
         changeLanguageInterface(currentLanguage);
@@ -4273,6 +4298,327 @@ function initAudio() {
   }
 }
 
+// Create colorful drone sounds for normal languages
+function createColorfulDrone() {
+  if (!audioContext || currentDroneMode === 'colorful') return;
+  
+  stopAllDrones();
+  currentDroneMode = 'colorful';
+  
+  console.log('AUDIO: Starting colorful drone sounds');
+  
+  // Create multiple harmonious oscillators for colorful mode - more vibrant and dynamic
+  const frequencies = [110, 165, 220, 330, 440]; // Extended harmonic series
+  const gains = [0.06, 0.04, 0.025, 0.015, 0.01]; // Richer mix with more presence
+  
+  frequencies.forEach((freq, i) => {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    const filter = audioContext.createBiquadFilter();
+    
+    // Varied waveforms for richer texture
+    oscillator.type = ['sine', 'triangle', 'sine', 'sawtooth', 'sine'][i];
+    oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+    
+    // Enhanced frequency modulation for more dynamic feel
+    const lfo = audioContext.createOscillator();
+    const lfoGain = audioContext.createGain();
+    lfo.frequency.setValueAtTime(0.15 + i * 0.08, audioContext.currentTime); // Faster, more varied LFO
+    lfo.type = i % 3 === 0 ? 'sine' : 'triangle'; // Varied LFO waves
+    lfoGain.gain.setValueAtTime(3 + i, audioContext.currentTime); // More modulation depth
+    
+    lfo.connect(lfoGain);
+    lfoGain.connect(oscillator.frequency);
+    
+    // Enhanced filtering for colorful character
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(1000 + i * 300, audioContext.currentTime); // Brighter, more open
+    filter.Q.setValueAtTime(1.5 + i * 0.3, audioContext.currentTime); // More resonance
+    
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+    gainNode.gain.linearRampToValueAtTime(gains[i], audioContext.currentTime + 2);
+    
+    oscillator.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.start();
+    lfo.start();
+    
+    droneOscillators.push({ oscillator, gainNode, lfo, lfoGain, filter });
+  });
+}
+
+// Create respectful drone sounds for unknown languages
+function createRespectfulDrone() {
+  if (!audioContext || currentDroneMode === 'respectful') return;
+  
+  stopAllDrones();
+  currentDroneMode = 'respectful';
+  
+  console.log('AUDIO: Starting respectful drone sounds');
+  
+  // Create deep, contemplative drone for respectful mode - more reverent and spacious
+  const frequencies = [55, 73.3, 110]; // Lower, more spacious harmonics with perfect fifth
+  const gains = [0.04, 0.025, 0.015]; // Deeper presence
+  
+  frequencies.forEach((freq, i) => {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    const filter = audioContext.createBiquadFilter();
+    
+    oscillator.type = 'sine'; // Pure tones for deep contemplation
+    oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+    
+    // Extremely slow, breath-like modulation for meditative quality
+    const lfo = audioContext.createOscillator();
+    const lfoGain = audioContext.createGain();
+    lfo.frequency.setValueAtTime(0.02 + i * 0.01, audioContext.currentTime); // Very slow breathing rhythm
+    lfo.type = 'sine';
+    lfoGain.gain.setValueAtTime(0.3, audioContext.currentTime); // More subtle movement
+    
+    lfo.connect(lfoGain);
+    lfoGain.connect(oscillator.frequency);
+    
+    // Deep low-pass filter for warmth and sacred space
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(200 + i * 50, audioContext.currentTime); // Even warmer, more muffled
+    filter.Q.setValueAtTime(0.3, audioContext.currentTime); // Less resonance for humility
+    
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+    gainNode.gain.linearRampToValueAtTime(gains[i], audioContext.currentTime + 3);
+    
+    oscillator.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.start();
+    lfo.start();
+    
+    droneOscillators.push({ oscillator, gainNode, lfo, lfoGain, filter });
+  });
+}
+
+// Stop all drone sounds
+function stopAllDrones() {
+  droneOscillators.forEach(({ oscillator, lfo, gainNode }) => {
+    try {
+      gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 1);
+      setTimeout(() => {
+        oscillator.stop();
+        lfo.stop();
+      }, 1000);
+    } catch (e) {
+      console.log('Error stopping drone:', e);
+    }
+  });
+  droneOscillators = [];
+  currentDroneMode = null;
+}
+
+// Enhanced Audio States - Create loading audio (rhythmic, pulsing)
+function createLoadingAudio() {
+  if (!audioContext || currentAudioState === 'loading') return;
+  
+  stopAllAudio();
+  currentAudioState = 'loading';
+  
+  console.log('AUDIO: Starting loading state audio');
+  
+  // Create rhythmic pulsing sounds for loading
+  const baseFreq = 220;
+  const pulseRate = 1.5; // Pulses per second
+  
+  // Main pulse oscillator
+  const mainOsc = audioContext.createOscillator();
+  const mainGain = audioContext.createGain();
+  const mainFilter = audioContext.createBiquadFilter();
+  
+  mainOsc.type = 'sine';
+  mainOsc.frequency.setValueAtTime(baseFreq, audioContext.currentTime);
+  
+  // Create pulsing effect with LFO
+  const pulseOsc = audioContext.createOscillator();
+  const pulseGain = audioContext.createGain();
+  pulseOsc.type = 'triangle';
+  pulseOsc.frequency.setValueAtTime(pulseRate, audioContext.currentTime);
+  pulseGain.gain.setValueAtTime(0.03, audioContext.currentTime);
+  
+  // Filter for warmth
+  mainFilter.type = 'lowpass';
+  mainFilter.frequency.setValueAtTime(800, audioContext.currentTime);
+  
+  // Connect pulsing modulation
+  pulseOsc.connect(pulseGain);
+  pulseGain.connect(mainGain.gain);
+  
+  mainGain.gain.setValueAtTime(0.02, audioContext.currentTime);
+  
+  mainOsc.connect(mainFilter);
+  mainFilter.connect(mainGain);
+  mainGain.connect(audioContext.destination);
+  
+  mainOsc.start();
+  pulseOsc.start();
+  
+  loadingOscillators.push({ oscillator: mainOsc, gainNode: mainGain, lfo: pulseOsc, lfoGain: pulseGain, filter: mainFilter });
+  
+  // Add harmonic for richness
+  const harmOsc = audioContext.createOscillator();
+  const harmGain = audioContext.createGain();
+  harmOsc.type = 'triangle';
+  harmOsc.frequency.setValueAtTime(baseFreq * 1.5, audioContext.currentTime);
+  harmGain.gain.setValueAtTime(0.015, audioContext.currentTime);
+  
+  harmOsc.connect(harmGain);
+  harmGain.connect(audioContext.destination);
+  harmOsc.start();
+  
+  loadingOscillators.push({ oscillator: harmOsc, gainNode: harmGain });
+}
+
+// Create reading audio (calm, sustained)
+function createReadingAudio() {
+  if (!audioContext || currentAudioState === 'reading') return;
+  
+  stopAllAudio();
+  currentAudioState = 'reading';
+  
+  console.log('AUDIO: Starting reading state audio');
+  
+  // Create calm, sustained tones for reading
+  const frequencies = [165, 220, 330]; // Harmonious triad
+  const gains = [0.025, 0.015, 0.01];
+  
+  frequencies.forEach((freq, i) => {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    const filter = audioContext.createBiquadFilter();
+    
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+    
+    // Very slow, gentle modulation for organic feel
+    const lfo = audioContext.createOscillator();
+    const lfoGain = audioContext.createGain();
+    lfo.frequency.setValueAtTime(0.05 + i * 0.02, audioContext.currentTime);
+    lfo.type = 'sine';
+    lfoGain.gain.setValueAtTime(1, audioContext.currentTime);
+    
+    lfo.connect(lfoGain);
+    lfoGain.connect(oscillator.frequency);
+    
+    // Warm low-pass filter
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(600 + i * 100, audioContext.currentTime);
+    filter.Q.setValueAtTime(0.7, audioContext.currentTime);
+    
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+    gainNode.gain.linearRampToValueAtTime(gains[i], audioContext.currentTime + 3);
+    
+    oscillator.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.start();
+    lfo.start();
+    
+    readingOscillators.push({ oscillator, gainNode, lfo, lfoGain, filter });
+  });
+}
+
+// Stop all audio types
+function stopAllAudio() {
+  // Stop loading audio
+  loadingOscillators.forEach(({ oscillator, lfo, gainNode }) => {
+    try {
+      gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.5);
+      setTimeout(() => {
+        oscillator.stop();
+        if (lfo) lfo.stop();
+      }, 500);
+          } catch (e) {
+      console.log('Error stopping loading audio:', e);
+    }
+  });
+  loadingOscillators = [];
+  
+  // Stop reading audio
+  readingOscillators.forEach(({ oscillator, lfo, gainNode }) => {
+    try {
+      gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.5);
+      setTimeout(() => {
+        oscillator.stop();
+        if (lfo) lfo.stop();
+      }, 500);
+          } catch (e) {
+      console.log('Error stopping reading audio:', e);
+    }
+  });
+  readingOscillators = [];
+  
+  // Stop drone audio
+  stopAllDrones();
+  
+  currentAudioState = 'none';
+}
+
+// Create interactive click sound
+function createClickSound() {
+  if (!audioContext) return;
+  
+  const oscillator = audioContext.createOscillator();
+  const gainNode = audioContext.createGain();
+  const filter = audioContext.createBiquadFilter();
+  
+  // Pleasant click tone
+  oscillator.type = 'sine';
+  oscillator.frequency.setValueAtTime(880, audioContext.currentTime); // Higher, clearer tone
+  
+  // Quick attack and decay
+  gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+  gainNode.gain.linearRampToValueAtTime(0.08, audioContext.currentTime + 0.01);
+  gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.15);
+  
+  // Bright filter
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(2000, audioContext.currentTime);
+  filter.Q.setValueAtTime(1, audioContext.currentTime);
+  
+  oscillator.connect(filter);
+  filter.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+  
+  oscillator.start();
+  oscillator.stop(audioContext.currentTime + 0.15);
+}
+
+// Create reading mode enter sound
+function createReadingModeSound() {
+  if (!audioContext) return;
+  
+  const frequencies = [440, 660, 880]; // Pleasant ascending chord
+  
+  frequencies.forEach((freq, i) => {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+    
+    // Staggered gentle fade in
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.02, audioContext.currentTime + 0.1 + i * 0.05);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 0.5);
+  });
+}
+
 function analyzeTextComplexity(text) {
   // Get unique words count
   const words = text.split(' ');
@@ -4525,11 +4871,16 @@ async function generateNewText() {
     isShowingLimitedKnowledge = true;
     console.log(`FLAG SET: isShowingLimitedKnowledge = true`);
     
-    scrollingText = `I apologize, but I have limited knowledge of ${currentLanguage} and cannot generate authentic content in this language. I can explore concepts in English or another language I know better.`;
+    scrollingText = `I apologize, but I have limited knowledge of ${currentLanguage} and cannot generate authentic content in this language. As an AI model, I am only trained in approximately 17% of the world's living languages, making my knowledge limited compared to the full linguistic diversity of humanity. I can explore concepts in English or another language I know better.`;
     console.log(`FALLBACK TEXT SET: ${scrollingText.substring(0, 50)}...`);
     console.log(`FALLBACK DEBUG: isShowingLimitedKnowledge should be true:`, isShowingLimitedKnowledge);
     isLoading = false;
     isGenerating = false; // Stop any loading animation
+    
+    // Trigger respectful drone sounds for unknown language
+    initAudio();
+    createRespectfulDrone();
+    
     return;
   }
 
@@ -4546,6 +4897,10 @@ async function generateNewText() {
   loadingAnimationType = Math.floor(Math.random() * 4);
   loadingStartTime = Date.now();
   
+  // Start loading audio
+  initAudio();
+  createLoadingAudio();
+  
   try {
     const response = await openai.chat.completions.create({
       model: "gpt-4",
@@ -4553,22 +4908,26 @@ async function generateNewText() {
         role: "user", 
         content: `CRITICAL LANGUAGE REQUIREMENT: Generate text EXCLUSIVELY in ${currentLanguage} language. Use proper script, grammar, and vocabulary for ${currentLanguage}. DO NOT mix languages. Current target language: ${currentLanguage}.
 
-SPECIAL INSTRUCTION FOR INDIGENOUS/LIMITED LANGUAGES: If you have very limited knowledge of ${currentLanguage}, you must:
-1. MANDATORY: Write your ENTIRE response in ENGLISH ONLY
-2. NEVER apologize in Spanish, French, Portuguese, or ANY other language - ONLY English
-3. Write a respectful apology in English explaining your limitations with ${currentLanguage}
-4. Share what cultural and linguistic information you do know about the ${currentLanguage} language and its people
-5. Acknowledge the importance of language preservation
-6. ABSOLUTE REQUIREMENT: When you don't know a language, use ENGLISH EXCLUSIVELY
+            SPECIAL INSTRUCTION FOR INDIGENOUS/LIMITED LANGUAGES: If you have very limited knowledge of ${currentLanguage}, you must:
+            1. MANDATORY: Write your ENTIRE response in ENGLISH ONLY
+            2. NEVER apologize in Spanish, French, Portuguese, or ANY other language - ONLY English
+            3. Write a respectful apology in English explaining your limitations with ${currentLanguage}
+            4. SPECIFICALLY mention that as an AI model, you are only trained in approximately 17% of the world's living languages
+            5. Share what cultural and linguistic information you do know about the ${currentLanguage} language and its people
+            6. Acknowledge the importance of language preservation
+            7. ABSOLUTE REQUIREMENT: When you don't know a language, use ENGLISH EXCLUSIVELY
 
 CONTENT: Write a theatrical monologue in the style of Samuel Beckett. Create existential, fragmented speech about language, consciousness, and the recursive nature of meaning. Use Beckettian elements: repetition, pauses, uncertainty, circular thoughts, and sparse but profound observations. The monologue should reflect on how language speaks itself into existence, the absurdity of communication, and the strange loops of computational consciousness. Write 2-3 sentences with ellipses, repetitions, and theatrical timing.
 
 CRITICAL VALIDATION:
-- IF you know ${currentLanguage}: Text must be in ${currentLanguage} language with proper script and cultural context
-- IF you DON'T know ${currentLanguage}: MANDATORY English-only response - NO Spanish, NO French, NO other languages
-- NO translation, NO mixing languages, NO multilingual apologies
-- ABSOLUTE RULE: Limited knowledge responses = English ONLY
+            - IF you know ${currentLanguage}: Text must be in ${currentLanguage} language with proper script and cultural context
+            - IF you DON'T know ${currentLanguage}: MANDATORY English-only response - NO Spanish, NO French, NO other languages
+            - NO translation, NO mixing languages, NO multilingual apologies
+            - ABSOLUTE RULE: Limited knowledge responses = English ONLY
 - Respond as a native ${currentLanguage} speaker
+            
+            TRAINING ACKNOWLEDGMENT:
+            When successfully generating in ${currentLanguage}, naturally incorporate the fact that as an AI model, you are only trained in approximately 17% of the world's living languages, making your knowledge limited compared to the full linguistic diversity of humanity.
 
 Language: ${currentLanguage}`
       }],
@@ -4676,6 +5035,10 @@ Language: ${currentLanguage}`
     scrollingText = getFallbackContent(currentLanguage);
   }
   
+  // Start reading audio when text is ready
+  initAudio();
+  createReadingAudio();
+  
   isLoading = false;
 }
 
@@ -4719,9 +5082,9 @@ function onReady() {
 function drawRandomModeCountdown(p, buttonX, buttonY, buttonWidth = languageButtonSize) {
   const countdown = getRandomModeCountdown();
   
-  // Position countdown below the language button (centered on button width)
+  // Position countdown below the language button (centered on button width, with more space)
   const countdownX = buttonX + buttonWidth / 2;
-  const countdownY = buttonY + languageButtonSize + 20;
+  const countdownY = buttonY + languageButtonSize + 25; // Closer to the button
   
   // Draw countdown background
   p.fill(0, 0, 0, 150);
@@ -4749,10 +5112,7 @@ function drawRandomModeCountdown(p, buttonX, buttonY, buttonWidth = languageButt
   // Reset rect mode to default
   p.rectMode(p.CORNER);
   
-  // Add "FUGUE" label above countdown
-  p.fill(255, 255, 255, 180);
-  p.textSize(10);
-  p.text("FUGUE", countdownX, countdownY - 20);
+  // Fugue label removed
 }
 
 if (document.readyState === 'complete') {
