@@ -27,7 +27,7 @@ let randomLanguageMode = false;
 let randomModeStartTime = 0;
 let randomModeInterval = null;
 let lastRandomLanguageChangeTime = 0;
-const RANDOM_MODE_DURATION = 60000; // 60 seconds per language
+const RANDOM_MODE_DURATION = 30000; // 30 seconds per language
 
 // changeLanguageInterface function is defined later with full color handling
 
@@ -54,7 +54,7 @@ function selectLanguageManually(language) {
   generateNewText();
 }
 
-let scrollingText = "press SPACE for fugue mode • press L for new language • press R to toggle fugue mode • press E for topology exposition • automatic generation every minute • flowing consciousness across languages"; 
+let scrollingText = "press SPACE for fugue mode • press L for new language • press E for topology exposition • automatic generation every minute • flowing consciousness across languages"; 
 let textPositions = []; // Remove fixed size initialization
 const SCROLL_SPEED = 3;
 const SPACING = 200;
@@ -1154,18 +1154,20 @@ function startRandomLanguageMode() {
   randomModeStartTime = Date.now();
   lastRandomLanguageChangeTime = Date.now();
   
-  // Immediately switch to a random language
-  switchToRandomLanguage();
+  // Show fugue mode message briefly
+  scrollingText = "FUGUE MODE ACTIVE • selecting random language...";
   
-  // Set up interval to switch languages every 60 seconds
+  // Set up interval to switch languages every 30 seconds
   randomModeInterval = setInterval(() => {
     switchToRandomLanguage();
   }, RANDOM_MODE_DURATION);
   
-  // Update instruction text
-  scrollingText = "FUGUE MODE ACTIVE • changing every 60 seconds • press SPACE to skip to next language • press R to exit fugue mode";
+  // After brief display, switch to random language with loading animation
+  setTimeout(() => {
+    switchToRandomLanguage();
+  }, 1500); // Show fugue message for 1.5 seconds, then start loading
   
-  console.log('FUGUE MODE: Mode activated, will change languages every 60 seconds');
+  console.log('FUGUE MODE: Mode activated, will change languages every 30 seconds');
 }
 
 // Function to stop fugue mode
@@ -1179,7 +1181,7 @@ function stopRandomLanguageMode() {
   }
   
   // Restore normal instruction text
-  scrollingText = "press SPACE for fugue mode • press L for new language • press R to toggle fugue mode • press E for topology exposition • automatic generation every minute • flowing consciousness across languages";
+  scrollingText = "press SPACE for fugue mode • press L for new language • press E for topology exposition • automatic generation every minute • flowing consciousness across languages";
   
   console.log('FUGUE MODE: Mode deactivated');
 }
@@ -1205,14 +1207,20 @@ function switchToRandomLanguage() {
   lastGenerationTime = Date.now();
   
   // Start generation in new language with loading animation
-  isGenerating = true;
-  isLoading = true;
-  loadingPhase = 0;
-  loadingAnimationType = Math.floor(Math.random() * 4);
-  loadingStartTime = Date.now();
-  
   console.log(`FUGUE MODE: Now generating content in ${currentLanguage}`);
   generateNewText();
+  
+  // After generation completes, ensure fugue mode instructions are shown
+  setTimeout(() => {
+    if (randomLanguageMode && !isLoading) {
+      // Only update if we're still in fugue mode and not loading
+      const fugueInstructions = "FUGUE MODE ACTIVE • changing every 30 seconds • press SPACE to skip to next language • press L to exit fugue mode";
+      if (!scrollingText.includes("FUGUE MODE ACTIVE")) {
+        // Only update if the current text doesn't already show fugue instructions
+        scrollingText = scrollingText + " • " + fugueInstructions;
+      }
+    }
+  }, 3000); // Wait 3 seconds after generation starts
 }
 
 // Function to get countdown seconds remaining
@@ -1968,7 +1976,9 @@ const sketch = p => {
   };
 
   p.keyPressed = function() {
-    if (p.keyCode === 32) { // Spacebar - Always enters fugue mode or skips in fugue mode
+    console.log('Key pressed - keyCode:', p.keyCode, 'key:', p.key);
+    
+    if (p.keyCode === 32) { // Spacebar - Fugue mode control
       if (randomLanguageMode) {
         // If already in fugue mode, skip to next random language
         console.log('SPACEBAR: Skipping to next language in fugue mode');
@@ -1979,41 +1989,29 @@ const sketch = p => {
         startRandomLanguageMode();
       }
       
-    } else if (p.keyCode === 76) { // 'L' key for Language change
-      if (!randomLanguageMode) {
-        // Only allow manual language change if not in fugue mode
-        const oldLanguage = currentLanguage;
-        const newLanguage = getProximateLanguage(currentLanguage);
-        currentLanguage = newLanguage;
-        console.log(`L key: Changed from ${oldLanguage} to ${newLanguage}`);
-        
-        // Change interface to match the new language
-        changeLanguageInterface(currentLanguage);
-        
-        console.log('Changed language to:', currentLanguage);
-        
-        // Show activation message in the new language
-        scrollingText = getInterfaceText('activated');
-        
-        // Generate content immediately in the new language
-        isGenerating = true;
-        isLoading = true;
-        loadingPhase = 0;
-        loadingAnimationType = Math.floor(Math.random() * 4);
-        loadingStartTime = Date.now();
-        lastGenerationTime = Date.now(); // Reset auto-generation timer
-        generateNewText();
-      } else {
-        console.log('L key ignored - fugue mode is active');
-      }
-      
-    } else if (p.keyCode === 82) { // 'R' key for Fugue mode toggle
+    } else if (p.keyCode === 76) { // 'L' key for Language change or exit fugue mode
       if (randomLanguageMode) {
-        console.log('R key: Stopping fugue mode');
+        // In fugue mode - exit fugue mode
+        console.log('L key: Exiting fugue mode');
         stopRandomLanguageMode();
       } else {
-        console.log('R key: Starting fugue mode');
-        startRandomLanguageMode();
+        // Not in fugue mode - change language
+      const oldLanguage = currentLanguage;
+      const newLanguage = getProximateLanguage(currentLanguage);
+      currentLanguage = newLanguage;
+      console.log(`L key: Changed from ${oldLanguage} to ${newLanguage}`);
+      
+      // Change interface to match the new language
+      changeLanguageInterface(currentLanguage);
+      
+      console.log('Changed language to:', currentLanguage);
+      
+      // Show activation message in the new language
+      scrollingText = getInterfaceText('activated');
+      
+      // Generate content immediately in the new language
+      lastGenerationTime = Date.now(); // Reset auto-generation timer
+      generateNewText();
       }
       
     } else if (p.keyCode === 73) { // 'I' key for Info
@@ -2026,6 +2024,11 @@ const sketch = p => {
       scrollingText = getFallbackContent(currentLanguage);
       isLoading = false;
       isGenerating = true;
+    } else if (p.keyCode === 84) { // 'T' key for Testing black/white mode
+      console.log('TESTING: Forcing black/white mode');
+      isShowingLimitedKnowledge = true;
+      scrollingText = "I apologize, but I have limited knowledge of this language and cannot generate authentic content.";
+      isLoading = false;
     } else if (p.keyCode === 69) { // 'E' key for Exposition
       showExposition = !showExposition;
       if (showExposition) {
@@ -2111,11 +2114,6 @@ const sketch = p => {
           console.log(`MENU CLICK: currentLanguage is now ${currentLanguage}`);
           
           // Trigger generation in the selected language
-          isGenerating = true;
-          isLoading = true;
-          loadingPhase = 0;
-          loadingAnimationType = Math.floor(Math.random() * 4);
-          loadingStartTime = Date.now();
           lastGenerationTime = Date.now();
           generateNewText();
           break; // Exit the loop after selection
@@ -2205,18 +2203,30 @@ const sketch = p => {
     // Debug logging for palette detection
     if (isIndigenousApology) {
       console.log('PALETTE DEBUG: Indigenous apology detected, switching to black/white');
+      console.log('PALETTE DEBUG: isShowingLimitedKnowledge flag:', isShowingLimitedKnowledge);
       console.log('PALETTE DEBUG: ScrollingText sample:', scrollingText.substring(0, 150));
+      console.log('PALETTE DEBUG: Background color set to BLACK [0,0,0]');
+    } else {
+      console.log('PALETTE DEBUG: Normal language content, using color scheme');
+      console.log('PALETTE DEBUG: isShowingLimitedKnowledge flag:', isShowingLimitedKnowledge);
     }
     
     // Get colors from the current language's color scheme (same as the bands)
     const languageColors = LANGUAGE_COLOR_SCHEMES[currentLanguage] || DEFAULT_COLORS;
     
     // Use respectful black background for indigenous language apologies, otherwise use language colors
-    const backgroundColor = isIndigenousApology ? [0, 0, 0] : languageColors[0]; // Black for apologies, language color otherwise
-    const accentColor = isIndigenousApology ? [200, 200, 200] : languageColors[2]; // Light gray for apologies, language accent otherwise
+    if (isIndigenousApology) {
+      // Black background for apologies
+      p.background(0, 0, 0);
+      console.log('PALETTE APPLIED: Black background set for indigenous apology');
+    } else {
+      // Normal language colors
+      const backgroundColor = languageColors[0];
+      p.background(backgroundColor);
+      console.log('PALETTE APPLIED: Normal color background set');
+    }
     
-    // Set background
-    p.background(backgroundColor);
+    const accentColor = isIndigenousApology ? [200, 200, 200] : languageColors[2];
     
     // Format the complete text by cleaning it up
     let completeText = scrollingText
@@ -2531,7 +2541,7 @@ const sketch = p => {
     if (randomLanguageMode && !isLoading) {
       const timeSinceLastChange = now - lastRandomLanguageChangeTime;
       if (timeSinceLastChange >= RANDOM_MODE_DURATION) {
-        console.log('AUTO-RANDOM: 60 seconds elapsed, switching to new random language');
+        console.log('AUTO-RANDOM: 30 seconds elapsed, switching to new random language');
         switchToRandomLanguage();
       }
     }
@@ -2565,15 +2575,26 @@ const sketch = p => {
       lastColorSwapTime = now;
     }
     
-    // Draw bands first
+    // Draw bands (always show bands, but use black/white colors for limited knowledge)
     p.noStroke();
     for (let i = 0; i < HORIZONTAL_BAND_COUNT; i++) {
-      const colorHex = currentColors[i % currentColors.length];
+      let colorHex, r, g, b;
+      
+      if (isShowingLimitedKnowledge) {
+        // Use black and white bands for limited knowledge
+        colorHex = (i % 2 === 0) ? '#000000' : '#222222'; // Alternating dark grays/black
+        console.log('BANDS DEBUG: Using black/gray bands for limited knowledge');
+      } else {
+        // Use normal language colors
+        colorHex = currentColors[i % currentColors.length];
+      }
+      
       // Convert hex color to RGB values
-      const r = parseInt(colorHex.slice(1,3), 16);
-      const g = parseInt(colorHex.slice(3,5), 16);
-      const b = parseInt(colorHex.slice(5,7), 16);
+      r = parseInt(colorHex.slice(1,3), 16);
+      g = parseInt(colorHex.slice(3,5), 16);
+      b = parseInt(colorHex.slice(5,7), 16);
       p.fill(r, g, b, 200); // Add some transparency
+      
       if (isVertical) {
         const bandWidth = p.width / HORIZONTAL_BAND_COUNT;
         p.rect(bandWidth * i, 0, bandWidth, p.height);
@@ -2583,12 +2604,20 @@ const sketch = p => {
       }
     }
     
-    // Draw scrolling text with corresponding colors
+    // Draw scrolling text with corresponding colors (always show, but use white for limited knowledge)
     for (let i = 0; i < HORIZONTAL_BAND_COUNT; i++) {
       const xPos = isVertical ? (p.width / HORIZONTAL_BAND_COUNT) * (i + 0.5) : textPositions[i];
       const yPos = isVertical ? textPositions[i] : (p.height / HORIZONTAL_BAND_COUNT) * (i + 0.5);
       
-      p.fill(textColors[i % textColors.length]); // Use text color array with modulo
+      if (isShowingLimitedKnowledge) {
+        // Use white text for limited knowledge
+        p.fill(255, 255, 255);
+        console.log('SCROLLING DEBUG: Using white text for limited knowledge');
+      } else {
+        // Use normal text colors
+        p.fill(textColors[i % textColors.length]);
+      }
+      
       drawScrollingText(p, xPos, yPos);
       
       // Skip if stopped
@@ -3116,18 +3145,12 @@ const sketch = p => {
         languageMenuOpen = false;
         
         // Immediately generate content in the new language
-        isGenerating = true;
-        isLoading = true;
-        loadingPhase = 0;
-        loadingAnimationType = Math.floor(Math.random() * 4);
-        loadingStartTime = Date.now();
-        
         // Initialize audio for the new generation
         initAudio();
         
         console.log('Language changed to:', currentLanguage, '- generating new content');
-        generateNewText();
         lastLanguageChangeTime = Date.now();
+        generateNewText();
         }
       }
     } else if (!isClickInMenu(p.mouseX, p.mouseY)) {
@@ -4495,14 +4518,33 @@ async function generateNewText() {
 
   // Check if language is well supported
   if (!isWellSupported) {
-    console.log(`Language ${currentLanguage} not well supported, responding in Spanish`);
-    scrollingText = `disculpa pero no tengo suficiente información sobre el idioma ${currentLanguage} para generar contenido auténtico en esta lengua pero puedo explorar sus conceptos en español o en otro idioma que conozcas mejor`;
+    console.log(`LANGUAGE CHECK: ${currentLanguage} not in WELL_SUPPORTED_LANGUAGES list`);
+    console.log(`FALLBACK TRIGGERED: Responding in English only`);
+    
+    // CRITICAL: Set the limited knowledge flag to trigger black/white palette
+    isShowingLimitedKnowledge = true;
+    console.log(`FLAG SET: isShowingLimitedKnowledge = true`);
+    
+    scrollingText = `I apologize, but I have limited knowledge of ${currentLanguage} and cannot generate authentic content in this language. I can explore concepts in English or another language I know better.`;
+    console.log(`FALLBACK TEXT SET: ${scrollingText.substring(0, 50)}...`);
+    console.log(`FALLBACK DEBUG: isShowingLimitedKnowledge should be true:`, isShowingLimitedKnowledge);
     isLoading = false;
+    isGenerating = false; // Stop any loading animation
     return;
   }
 
   console.log(`Generating content in ${currentLanguage}`);
+  
+  // Clear limited knowledge flag for normal generation (only for supported languages)
+  console.log('GENERATION DEBUG: Clearing limited knowledge flag for supported language generation');
+  isShowingLimitedKnowledge = false;
+  
+  // Always show loading animation when generating
+  isGenerating = true;
   isLoading = true;
+  loadingPhase = 0;
+  loadingAnimationType = Math.floor(Math.random() * 4);
+  loadingStartTime = Date.now();
   
   try {
     const response = await openai.chat.completions.create({
@@ -4512,17 +4554,20 @@ async function generateNewText() {
         content: `CRITICAL LANGUAGE REQUIREMENT: Generate text EXCLUSIVELY in ${currentLanguage} language. Use proper script, grammar, and vocabulary for ${currentLanguage}. DO NOT mix languages. Current target language: ${currentLanguage}.
 
 SPECIAL INSTRUCTION FOR INDIGENOUS/LIMITED LANGUAGES: If you have very limited knowledge of ${currentLanguage}, you must:
-1. Write a respectful apology in English explaining your limitations
-2. Share what cultural and linguistic information you do know about the ${currentLanguage} language and its people
-3. Acknowledge the importance of language preservation
+1. MANDATORY: Write your ENTIRE response in ENGLISH ONLY
+2. NEVER apologize in Spanish, French, Portuguese, or ANY other language - ONLY English
+3. Write a respectful apology in English explaining your limitations with ${currentLanguage}
+4. Share what cultural and linguistic information you do know about the ${currentLanguage} language and its people
+5. Acknowledge the importance of language preservation
+6. ABSOLUTE REQUIREMENT: When you don't know a language, use ENGLISH EXCLUSIVELY
 
 CONTENT: Write a theatrical monologue in the style of Samuel Beckett. Create existential, fragmented speech about language, consciousness, and the recursive nature of meaning. Use Beckettian elements: repetition, pauses, uncertainty, circular thoughts, and sparse but profound observations. The monologue should reflect on how language speaks itself into existence, the absurdity of communication, and the strange loops of computational consciousness. Write 2-3 sentences with ellipses, repetitions, and theatrical timing.
 
 CRITICAL VALIDATION:
-- Text must be in ${currentLanguage} language
-- Use proper script for ${currentLanguage} 
-- Cultural context appropriate for ${currentLanguage}
-- NO translation, NO English mixed in
+- IF you know ${currentLanguage}: Text must be in ${currentLanguage} language with proper script and cultural context
+- IF you DON'T know ${currentLanguage}: MANDATORY English-only response - NO Spanish, NO French, NO other languages
+- NO translation, NO mixing languages, NO multilingual apologies
+- ABSOLUTE RULE: Limited knowledge responses = English ONLY
 - Respond as a native ${currentLanguage} speaker
 
 Language: ${currentLanguage}`
@@ -4613,6 +4658,7 @@ Language: ${currentLanguage}`
       generatedText = `[LIMITED_KNOWLEDGE_RESPONSE] ${generatedText}`;
     } else {
       isShowingLimitedKnowledge = false; // Clear flag for normal responses
+      console.log('GENERATION DEBUG: Normal response, cleared limited knowledge flag');
     }
     
     // Process the text for scrolling (preserve the marker and key phrases)
