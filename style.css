@@ -1,0 +1,23 @@
+/* Clear/transparent backgrounds throughout */
+html, body {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Centering the canvas inside the main element */
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full height of the viewport */
+  overflow: hidden; /* Hide overflow */
+  background: transparent;
+}
+
+canvas {
+  display: block; /* Removes default canvas margin */
+  background: transparent !important;
+}
