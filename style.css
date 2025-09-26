@@ -1,0 +1,25 @@
+/* Dark background for Dark Enlightenment theme */
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #000000;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Helvetica', 'Arial', sans-serif;
+  color: #ffffff;
+}
+
+/* Centering the canvas inside the main element */
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full height of the viewport */
+  overflow: hidden; /* Hide overflow */
+  background: #000000;
+}
+
+canvas {
+  display: block; /* Removes default canvas margin */
+  background: #000000 !important;
+}
