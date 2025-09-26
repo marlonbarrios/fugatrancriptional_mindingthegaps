@@ -3,6 +3,8 @@
 
 *Premiering at Theater im Depot, Dortmund, October 1st, 2025*
 
+🌐 **[Experience the Installation Live](https://fugatrancriptional-mindingthegaps.vercel.app/)**
+
 ---
 
 ## Images
@@ -97,6 +99,12 @@ The AI critiques its own colonial limitations, acknowledging how large language 
 - **Colorful drone synthesis**: Harmonic oscillators with frequency modulation
 - **Respectful silence**: For languages with limited AI knowledge
 - **Loading sounds**: Dynamic audio feedback during text generation
+
+## Experience the Installation
+
+🚀 **[Live Installation: https://fugatrancriptional-mindingthegaps.vercel.app/](https://fugatrancriptional-mindingthegaps.vercel.app/)**
+
+Explore how AI encounters the boundaries of its linguistic knowledge across different languages. Watch as the system tests its capabilities and respectfully acknowledges its limitations.
 
 ## Installation Requirements
 
