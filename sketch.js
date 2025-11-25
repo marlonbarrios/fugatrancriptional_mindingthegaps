@@ -493,115 +493,40 @@ function changeLanguageInterface(language) {
 
 // Manual generation state variables (isGenerating declared at top)
 
-// Only languages that OpenAI models actually support well
+// The 27 languages that OpenAI models actually manage well
 const LANGUAGES = {
-  // Major World Languages (Excellent Support)
+  // Tier 1: Native-Level Performance (8 languages)
   'English': 'english',
-  'Spanish': 'spanish',
+  'Spanish': 'spanish', 
   'French': 'french',
   'German': 'german',
   'Italian': 'italian',
   'Portuguese': 'portuguese',
   'Russian': 'russian',
-  'Japanese': 'japanese',
   'Chinese': 'chinese',
+  
+  // Tier 2: Excellent Performance (10 languages)
+  'Japanese': 'japanese',
   'Korean': 'korean',
   'Arabic': 'arabic',
   'Hindi': 'hindi',
-  'Turkish': 'turkish',
   'Dutch': 'dutch',
   'Polish': 'polish',
   'Swedish': 'swedish',
+  'Turkish': 'turkish',
+  'Indonesian': 'indonesian',
+  'Vietnamese': 'vietnamese',
+  
+  // Tier 3: Very Good Performance (9 languages)
   'Norwegian': 'norwegian',
   'Danish': 'danish',
   'Finnish': 'finnish',
-  'Greek': 'greek',
-  'Vietnamese': 'vietnamese',
-  'Thai': 'thai',
-  'Hebrew': 'hebrew',
-  'Persian': 'persian',
-  'Urdu': 'urdu',
-  'Bengali': 'bengali',
-  'Tamil': 'tamil',
-  'Telugu': 'telugu',
-  'Indonesian': 'indonesian',
-  'Malay': 'malay',
-  'Tagalog': 'tagalog',
-  
-  // European Languages (Good Support)
   'Czech': 'czech',
   'Hungarian': 'hungarian',
-  'Romanian': 'romanian',
-  'Bulgarian': 'bulgarian',
-  'Croatian': 'croatian',
-  'Serbian': 'serbian',
-  'Slovak': 'slovak',
-  'Slovenian': 'slovenian',
-  'Lithuanian': 'lithuanian',
-  'Latvian': 'latvian',
-  'Estonian': 'estonian',
-  'Ukrainian': 'ukrainian',
-  'Belarusian': 'belarusian',
-  'Macedonian': 'macedonian',
-  'Albanian': 'albanian',
-  'Basque': 'basque',
-  'Catalan': 'catalan',
-  'Galician': 'galician',
-  'Welsh': 'welsh',
-  'Irish': 'irish',
-  'Icelandic': 'icelandic',
-  'Maltese': 'maltese',
-  
-  // Central Asian Languages (Moderate Support)
-  'Georgian': 'georgian',
-  'Armenian': 'armenian',
-  'Azerbaijani': 'azerbaijani',
-  'Kazakh': 'kazakh',
-  'Uzbek': 'uzbek',
-  'Kyrgyz': 'kyrgyz',
-  'Turkmen': 'turkmen',
-  'Tajik': 'tajik',
-  'Mongolian': 'mongolian',
-  
-  // Southeast Asian Languages (Good Support)
-  'Burmese': 'burmese',
-  'Khmer': 'khmer',
-  'Lao': 'lao',
-  'Sinhala': 'sinhala',
-  'Nepali': 'nepali',
-  
-  // Indian Languages (Good Support)
-  'Marathi': 'marathi',
-  'Gujarati': 'gujarati',
-  'Punjabi': 'punjabi',
-  'Kannada': 'kannada',
-  'Malayalam': 'malayalam',
-  'Odia': 'odia',
-  'Assamese': 'assamese',
-  
-  // African Languages (Moderate Support)
-  'Swahili': 'swahili',
-  'Yoruba': 'yoruba',
-  'Zulu': 'zulu',
-  'Xhosa': 'xhosa',
-  'Amharic': 'amharic',
-  'Hausa': 'hausa',
-  'Igbo': 'igbo',
-  'Somali': 'somali',
-  'Afrikaans': 'afrikaans',
-  
-  // Pacific Languages (Limited but Some Support)
-  'Hawaiian': 'hawaiian',
-  'Maori': 'maori',
-  'Samoan': 'samoan',
-  'Fijian': 'fijian',
-  
-  // Constructed Languages (Good Support)
-  'Esperanto': 'esperanto',
-  
-  // Classical Languages (Good Support)
-  'Latin': 'latin',
-  'Sanskrit': 'sanskrit'
+  'Greek': 'greek',
+  'Hebrew': 'hebrew',
+  'Thai': 'thai',
+  'Ukrainian': 'ukrainian'
 };
 
 // Comprehensive indigenous language information database
@@ -915,43 +840,35 @@ Object.keys(LANGUAGES).forEach(lang => {
   }
 });
 
-// Language clusters - only well-supported languages
+// Language clusters - only the 27 languages OpenAI manages well
 const LANGUAGE_CATEGORIES = {
-  major: ['English', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 'Russian', 'Chinese', 'Japanese', 'Arabic', 'Hindi'],
-  romance: ['Spanish', 'French', 'Italian', 'Portuguese', 'Romanian', 'Catalan', 'Galician'],
-  germanic: ['English', 'German', 'Dutch', 'Swedish', 'Norwegian', 'Danish', 'Icelandic'],
-  slavic: ['Russian', 'Polish', 'Czech', 'Ukrainian', 'Croatian', 'Serbian', 'Bulgarian', 'Slovak', 'Slovenian', 'Lithuanian', 'Latvian', 'Estonian', 'Belarusian', 'Macedonian'],
-  eastAsian: ['Chinese', 'Japanese', 'Korean', 'Vietnamese', 'Thai', 'Burmese', 'Khmer', 'Lao', 'Mongolian'],
+  tier1: ['English', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 'Russian', 'Chinese'],
+  tier2: ['Japanese', 'Korean', 'Arabic', 'Hindi', 'Dutch', 'Polish', 'Swedish', 'Turkish', 'Indonesian', 'Vietnamese'],
+  tier3: ['Norwegian', 'Danish', 'Finnish', 'Czech', 'Hungarian', 'Greek', 'Hebrew', 'Thai', 'Ukrainian'],
+  romance: ['Spanish', 'French', 'Italian', 'Portuguese'],
+  germanic: ['English', 'German', 'Dutch', 'Swedish', 'Norwegian', 'Danish'],
+  slavic: ['Russian', 'Polish', 'Czech', 'Ukrainian'],
+  eastAsian: ['Chinese', 'Japanese', 'Korean', 'Vietnamese', 'Thai'],
   semitic: ['Arabic', 'Hebrew'],
-  indic: ['Hindi', 'Bengali', 'Tamil', 'Telugu', 'Urdu', 'Punjabi', 'Gujarati', 'Marathi', 'Kannada', 'Malayalam', 'Odia', 'Assamese', 'Nepali', 'Sinhala'],
-  african: ['Swahili', 'Yoruba', 'Zulu', 'Xhosa', 'Amharic', 'Hausa', 'Igbo', 'Somali', 'Afrikaans'],
-  pacific: ['Hawaiian', 'Maori', 'Samoan', 'Fijian'],
-  european_regional: ['Albanian', 'Basque', 'Welsh', 'Irish', 'Maltese'],
-  central_asian: ['Georgian', 'Armenian', 'Azerbaijani', 'Kazakh', 'Uzbek', 'Kyrgyz', 'Turkmen', 'Tajik'],
-  constructed: ['Esperanto'],
-  classical: ['Latin', 'Sanskrit']
+  nordic: ['Swedish', 'Norwegian', 'Danish', 'Finnish']
 };
 
 const CATEGORY_NAMES = {
   all: `All Languages (${Object.keys(LANGUAGES).length})`,
-  major: 'Major World Languages (11)',
-  romance: 'Romance Languages (7)',
-  germanic: 'Germanic Languages (7)', 
-  slavic: 'Slavic Languages (14)',
-  eastAsian: 'East Asian Languages (9)',
+  tier1: 'Tier 1: Native-Level (8)',
+  tier2: 'Tier 2: Excellent (10)',
+  tier3: 'Tier 3: Very Good (9)',
+  romance: 'Romance Languages (4)',
+  germanic: 'Germanic Languages (6)', 
+  slavic: 'Slavic Languages (4)',
+  eastAsian: 'East Asian Languages (5)',
   semitic: 'Semitic Languages (2)',
-  indic: 'Indic Languages (14)',
-  african: 'African Languages (9)',
-  pacific: 'Pacific Languages (4)',
-  european_regional: 'European Regional (5)',
-  central_asian: 'Central Asian (8)',
-  constructed: 'Constructed Languages (1)',
-  classical: 'Classical Languages (2)'
+  nordic: 'Nordic Languages (4)'
 };
 
-// Language display names - only for supported languages
+// Language display names - only the 27 languages OpenAI manages well
 const LANGUAGE_DISPLAY_NAMES = {
-  // Major World Languages (Excellent Support)
+  // Tier 1: Native-Level Performance (8 languages)
   'English': 'English',
   'Spanish': 'Español (Spanish)',
   'French': 'Français (French)',
@@ -959,118 +876,43 @@ const LANGUAGE_DISPLAY_NAMES = {
   'Italian': 'Italiano (Italian)',
   'Portuguese': 'Português (Portuguese)',
   'Russian': 'Русский (Russian)',
-  'Japanese': '日本語 (Japanese)',
   'Chinese': '中文 (Chinese)',
+  
+  // Tier 2: Excellent Performance (10 languages)
+  'Japanese': '日本語 (Japanese)',
   'Korean': '한국어 (Korean)',
   'Arabic': 'العربية (Arabic)',
   'Hindi': 'हिन्दी (Hindi)',
-  'Turkish': 'Türkçe (Turkish)',
   'Dutch': 'Nederlands (Dutch)',
   'Polish': 'Polski (Polish)',
   'Swedish': 'Svenska (Swedish)',
+  'Turkish': 'Türkçe (Turkish)',
+  'Indonesian': 'Bahasa Indonesia (Indonesian)',
+  'Vietnamese': 'Tiếng Việt (Vietnamese)',
+  
+  // Tier 3: Very Good Performance (9 languages)
   'Norwegian': 'Norsk (Norwegian)',
   'Danish': 'Dansk (Danish)',
   'Finnish': 'Suomi (Finnish)',
-  'Greek': 'Ελληνικά (Greek)',
-  'Vietnamese': 'Tiếng Việt (Vietnamese)',
-  'Thai': 'ไทย (Thai)',
-  'Hebrew': 'עברית (Hebrew)',
-  'Persian': 'فارسی (Persian)',
-  'Urdu': 'اردو (Urdu)',
-  'Bengali': 'বাংলা (Bengali)',
-  'Tamil': 'தமிழ் (Tamil)',
-  'Telugu': 'తెలుగు (Telugu)',
-  'Indonesian': 'Bahasa Indonesia (Indonesian)',
-  'Malay': 'Bahasa Melayu (Malay)',
-  'Tagalog': 'Tagalog (Filipino)',
-  
-  // European Languages (Good Support)
   'Czech': 'Čeština (Czech)',
   'Hungarian': 'Magyar (Hungarian)',
-  'Romanian': 'Română (Romanian)',
-  'Bulgarian': 'Български (Bulgarian)',
-  'Croatian': 'Hrvatski (Croatian)',
-  'Serbian': 'Српски (Serbian)',
-  'Slovak': 'Slovenčina (Slovak)',
-  'Slovenian': 'Slovenščina (Slovenian)',
-  'Lithuanian': 'Lietuvių (Lithuanian)',
-  'Latvian': 'Latviešu (Latvian)',
-  'Estonian': 'Eesti (Estonian)',
-  'Ukrainian': 'Українська (Ukrainian)',
-  'Belarusian': 'Беларуская (Belarusian)',
-  'Macedonian': 'Македонски (Macedonian)',
-  'Albanian': 'Shqip (Albanian)',
-  'Basque': 'Euskera (Basque)',
-  'Catalan': 'Català (Catalan)',
-  'Galician': 'Galego (Galician)',
-  'Welsh': 'Cymraeg (Welsh)',
-  'Irish': 'Gaeilge (Irish)',
-  'Icelandic': 'Íslenska (Icelandic)',
-  'Maltese': 'Malti (Maltese)',
-  
-  // Central Asian Languages (Moderate Support)
-  'Georgian': 'ქართული (Georgian)',
-  'Armenian': 'Հայերեն (Armenian)',
-  'Azerbaijani': 'Azərbaycan (Azerbaijani)',
-  'Kazakh': 'Қазақша (Kazakh)',
-  'Uzbek': 'O\'zbek (Uzbek)',
-  'Kyrgyz': 'Кыргызча (Kyrgyz)',
-  'Turkmen': 'Türkmençe (Turkmen)',
-  'Tajik': 'Тоҷикӣ (Tajik)',
-  'Mongolian': 'Монгол (Mongolian)',
-  
-  // Southeast Asian Languages (Good Support)
-  'Burmese': 'မြန်မာ (Burmese)',
-  'Khmer': 'ខ្មែរ (Khmer)',
-  'Lao': 'ລາວ (Lao)',
-  'Sinhala': 'සිංහල (Sinhala)',
-  'Nepali': 'नेपाली (Nepali)',
-  
-  // Indian Languages (Good Support)
-  'Marathi': 'मराठी (Marathi)',
-  'Gujarati': 'ગુજરાતી (Gujarati)',
-  'Punjabi': 'ਪੰਜਾਬੀ (Punjabi)',
-  'Kannada': 'ಕನ್ನಡ (Kannada)',
-  'Malayalam': 'മലയാളം (Malayalam)',
-  'Odia': 'ଓଡ଼ିଆ (Odia)',
-  'Assamese': 'অসমীয়া (Assamese)',
-  
-  // African Languages (Moderate Support)
-  'Swahili': 'Kiswahili (Swahili)',
-  'Yoruba': 'Yorùbá (Yoruba)',
-  'Zulu': 'isiZulu (Zulu)',
-  'Xhosa': 'isiXhosa (Xhosa)',
-  'Amharic': 'አማርኛ (Amharic)',
-  'Hausa': 'Hausa (Hausa)',
-  'Igbo': 'Igbo (Igbo)',
-  'Somali': 'Af-Soomaali (Somali)',
-  'Afrikaans': 'Afrikaans (Afrikaans)',
-  
-  // Pacific Languages (Limited but Some Support)
-  'Hawaiian': 'ʻŌlelo Hawaiʻi (Hawaiian)',
-  'Maori': 'Te Reo Māori (Māori)',
-  'Samoan': 'Gagana Sāmoa (Samoan)',
-  'Fijian': 'Na Vosa Vakaviti (Fijian)',
-  
-  // Constructed Languages (Good Support)
-  'Esperanto': 'Esperanto',
-  
-  // Classical Languages (Good Support)
-  'Latin': 'Lingua Latina (Latin)',
-  'Sanskrit': 'संस्कृतम् (Sanskrit)'
+  'Greek': 'Ελληνικά (Greek)',
+  'Hebrew': 'עברית (Hebrew)',
+  'Thai': 'ไทย (Thai)',
+  'Ukrainian': 'Українська (Ukrainian)'
 };
 
 // All supported languages for the system
 const SIMPLE_LANGUAGES = Object.keys(LANGUAGES);
 
-// Languages that are well-supported by the model (major world languages)
+// The 27 languages that are truly well-supported by OpenAI models
 const WELL_SUPPORTED_LANGUAGES = [
-  'English', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 
-  'Russian', 'Chinese', 'Japanese', 'Arabic', 'Hindi', 'Korean',
-  'Dutch', 'Swedish', 'Norwegian', 'Danish', 'Finnish', 'Polish',
-  'Czech', 'Hungarian', 'Romanian', 'Bulgarian', 'Croatian', 'Serbian',
-  'Greek', 'Hebrew', 'Turkish', 'Persian', 'Urdu', 'Bengali',
-  'Tamil', 'Telugu', 'Thai', 'Vietnamese', 'Indonesian', 'Swahili'
+  // Tier 1: Native-Level
+  'English', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 'Russian', 'Chinese',
+  // Tier 2: Excellent  
+  'Japanese', 'Korean', 'Arabic', 'Hindi', 'Dutch', 'Polish', 'Swedish', 'Turkish', 'Indonesian', 'Vietnamese',
+  // Tier 3: Very Good
+  'Norwegian', 'Danish', 'Finnish', 'Czech', 'Hungarian', 'Greek', 'Hebrew', 'Thai', 'Ukrainian'
 ];
 
 let currentLanguage = 'English'; // Start with English as base language
@@ -1880,7 +1722,7 @@ function drawHomepageInstructions(p) {
     "E → Show exposition",
     "Mouse Hold → Reading mode",
     "",
-    "• 93 supported languages",
+    "• 27 high-quality languages",
     "• AI generates text every 20 seconds",
     "• Exploring computational linguistics",
     "• Testing AI across world languages",
