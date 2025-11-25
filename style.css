@@ -11,15 +11,17 @@ html, body {
 
 /* Centering the canvas inside the main element */
 main {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh; /* Full height of the viewport */
-  overflow: hidden; /* Hide overflow */
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
   background: #2c3e50; /* Colorful background from palette */
 }
 
 canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
   display: block; /* Removes default canvas margin */
   background: transparent !important; /* Let p5.js handle colors */
 }
