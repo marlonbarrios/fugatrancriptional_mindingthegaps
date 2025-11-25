@@ -81,7 +81,7 @@ The AI critiques its own colonial limitations, acknowledging how large language 
 - 🔍 **Systematic Language Testing**: Probes GPT-4's knowledge across world languages
 - 🙏 **AI Apology System**: When AI doesn't know a language, it respectfully apologizes
 - 📊 **Gap Documentation**: Visual demonstration of AI's linguistic limitations
-- 🌍 **Originally 40+ Languages**: Now focused on 5 European languages for installation
+- 🇪🇺 **5 European Languages**: Focused selection eliminating AI knowledge gaps
 - ⚫ **Dark aesthetic**: Black background, pure white Helvetica text
 - ⏱️ **20-second regeneration** cycle exposing knowledge boundaries
 - 🎵 **Fugue mode**: Automatic language cycling revealing AI capabilities
@@ -276,7 +276,7 @@ The installation uses:
 - **SPACEBAR**: Enter/exit fugue mode (automatic language cycling every 30 seconds)
 - **L key**: Change language manually or exit fugue mode
 - **Mouse hold**: Enter reading mode - view complete text with calm background
-- **Language Menu**: Click the language button (top-right) to select from 120+ languages
+- **Language Menu**: Click the language button (top-right) to select from 5 European languages
 - **Scroll Wheel**: Navigate through the language menu
 - Text automatically generates every minute in animation mode
 - Visual elements respond dynamically:
@@ -285,27 +285,19 @@ The installation uses:
   - Loading animations with pulsing effects during generation
   - Color swapping and dynamic background shifts
 
-## Languages (120+ Supported)
+## Languages (5 European Languages)
 
-The installation includes an expansive range of languages:
+For the Dark Enlightenment installation, the language selection has been focused on **5 European languages** that the AI model handles well:
 
-**Well-Supported Languages (35+):**
-- Major world languages: English, Spanish, French, German, Italian, Portuguese, Russian, Chinese, Japanese, Arabic, Hindi, Korean
-- European languages: Dutch, Swedish, Norwegian, Danish, Finnish, Polish, Czech, Hungarian, Romanian, Bulgarian, Croatian, Serbian, Greek, Hebrew, Turkish
-- Asian languages: Persian, Urdu, Bengali, Tamil, Telugu, Thai, Vietnamese, Indonesian, Swahili
+**Supported Languages:**
+- 🇬🇧 **English** - Primary language, full AI capabilities
+- 🇩🇪 **Deutsch (German)** - Strong AI support, appropriate for German techno-installation context  
+- 🇫🇷 **Français (French)** - Well-supported by the model
+- 🇮🇹 **Italiano (Italian)** - Good AI language capabilities
+- 🇪🇸 **Español (Spanish)** - Strong model performance
 
-**Indigenous Languages of the Americas:**
-- Quechua, Nahuatl, Maya, Cherokee, Navajo, Guaraní, Aymara, Mapudungun, Kichwa, Shipibo, Wayuu, Embera
-- Mixtec, Zapotec, Otomi, Tarahumara, Huichol, Purépecha, Inuktitut, Cree, Ojibwe, Lakota, Apache, Hopi
-
-**European Regional & Minority Languages:**
-- Euskera, Catalán, Galego, Occitan, Breton, Welsh, Irish, Scottish Gaelic, Cornish, Manx, Faroese, Icelandic, Frisian
-
-**African Languages:**
-- Yoruba, Igbo, Hausa, Amharic, Tigrinya, Oromo, Somali, Zulu, Xhosa, Akan, Twi, Wolof, Malagasy, Kinyarwanda
-
-**Pacific & Other Languages:**
-- Mongolian, Tibetan, Burmese, Khmer, Maori, Hawaiian, Fijian, Samoan, Sami, Greenlandic, Ainu, Tok Pisin
+**Why Only 5 Languages?**
+This focused selection eliminates the "gaps" and ensures consistent, high-quality AI-generated content for the installation environment. Each language represents a major European linguistic tradition and allows the AI to demonstrate its full capabilities without encountering knowledge limitations.
 
 ## Cultural Context
 
