@@ -56,7 +56,8 @@ function selectLanguageManually(language) {
 
 let scrollingText = ""; // Start empty, will show instructions until AI generates content
 let showingInstructions = true; // Flag to track if we're showing instructions
-let hasGeneratedContent = false; // Flag to track if AI has generated content yet 
+let hasGeneratedContent = false; // Flag to track if AI has generated content yet
+let userHasStarted = false; // Flag to track if user has pressed SPACE to start 
 let textPositions = []; // Remove fixed size initialization
 const SCROLL_SPEED = 3;
 const SPACING = 200;
@@ -1717,17 +1718,17 @@ function drawHomepageInstructions(p) {
     "by Marlon Barrios Solano",
     "",
     "CONTROLS:",
-    "SPACE → Enter fugue mode (auto language cycling)",
+    "SPACE → START fugue mode (auto language cycling)",
     "L → Change language manually", 
     "E → Show exposition",
     "Mouse Hold → Reading mode",
     "",
     "• 27 high-quality languages",
-    "• AI generates text every 20 seconds",
+    "• AI generates text every 20 seconds (after start)",
     "• Exploring computational linguistics",
     "• Testing AI across world languages",
     "",
-    "Generating initial content..."
+    "Press SPACE to begin..."
   ];
   
   const lineHeight = 35;
@@ -1803,10 +1804,10 @@ const sketch = p => {
       fontSize = dynamicBandHeight * 0.8;
     }
     
-    // Start with initial generation
-    setTimeout(() => {
-      generateNewText();
-    }, 2000); // Start generating after 2 seconds
+    // Wait for user to press SPACE bar - no automatic generation
+    // setTimeout(() => {
+    //   generateNewText();
+    // }, 2000); // Disabled - wait for SPACE bar press
     p.textFont('Helvetica');
     p.textSize(fontSize);
     p.textAlign(p.CENTER, p.CENTER);
@@ -1848,6 +1849,9 @@ const sketch = p => {
     console.log('Key pressed - keyCode:', p.keyCode, 'key:', p.key);
     
     if (p.keyCode === 32) { // Spacebar - Fugue mode control
+      // Mark that user has started the app
+      userHasStarted = true;
+      
       if (randomLanguageMode) {
         // If already in fugue mode, skip to next random language
         console.log('SPACEBAR: Skipping to next language in fugue mode');
@@ -1879,6 +1883,7 @@ const sketch = p => {
       scrollingText = getInterfaceText('activated');
       
       // Generate content immediately in the new language
+      userHasStarted = true; // Mark that user has started the app
       lastGenerationTime = Date.now(); // Reset auto-generation timer
         generateNewText();
       }
@@ -2431,9 +2436,9 @@ const sketch = p => {
       }
     }
     
-    // Automatic generation timing - generate new text every 20 seconds
+    // Automatic generation timing - generate new text every 20 seconds (only after user starts)
     // CRITICAL: Auto-generation ALWAYS stays in the same language (currentLanguage)
-    if (!isLoading && !randomLanguageMode && now - lastGenerationTime > AUTO_GENERATION_INTERVAL) {
+    if (!isLoading && !randomLanguageMode && userHasStarted && now - lastGenerationTime > AUTO_GENERATION_INTERVAL) {
       lastGenerationTime = now;
       console.log(`AUTO-GENERATION: Generating new content in SAME language: ${currentLanguage}`);
       console.log(`AUTO-GENERATION: Language will remain ${currentLanguage} (no change)`);
