@@ -2448,7 +2448,10 @@ const sketch = p => {
       return; // Don't draw anything else while loading
     }
     
-    p.clear(); // Clear background to transparent
+    // Set background using current language colors
+    const languageColors = LANGUAGE_COLOR_SCHEMES[currentLanguage] || DEFAULT_COLORS;
+    const backgroundColor = languageColors[0];
+    p.background(backgroundColor);
     
     // Ensure colors are initialized
     if (!currentColors || currentColors.length === 0) {
