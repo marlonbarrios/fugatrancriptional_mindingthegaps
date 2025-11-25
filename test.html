@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Canvas</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body { margin: 0; padding: 0; background: #2c3e50; }
+        main { display: flex; justify-content: center; align-items: center; height: 100vh; }
+    </style>
+</head>
+<body>
+    <main></main>
+    <script>
+        const sketch = p => {
+            p.setup = function() {
+                p.createCanvas(800, 600);
+                console.log('Canvas created');
+            };
+            
+            p.draw = function() {
+                p.background('#3498db');
+                p.fill(255);
+                p.textAlign(p.CENTER, p.CENTER);
+                p.textSize(32);
+                p.text('Test Canvas Working!', p.width/2, p.height/2);
+                
+                // Draw some bands
+                p.noStroke();
+                for(let i = 0; i < 5; i++) {
+                    p.fill(255, 100, 100, 100);
+                    p.rect(0, i * 120, p.width, 60);
+                }
+            };
+        };
+        
+        const mainElt = document.querySelector('main');
+        new p5(sketch, mainElt);
+    </script>
+</body>
+</html>

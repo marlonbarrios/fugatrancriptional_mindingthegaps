@@ -2418,6 +2418,11 @@ const sketch = p => {
     const now = Date.now();
     const isVertical = VERTICAL_LANGUAGES.has(currentLanguage);
     
+    // Debug: Draw a simple test to see if canvas is working
+    if (now % 1000 < 50) { // Log once per second
+      console.log('Draw function running, canvas size:', p.width, 'x', p.height);
+    }
+    
     // Check for reading mode first
     if (readingMode) {
       console.log('Drawing reading mode');
@@ -2452,6 +2457,11 @@ const sketch = p => {
     const languageColors = LANGUAGE_COLOR_SCHEMES[currentLanguage] || DEFAULT_COLORS;
     const backgroundColor = languageColors[0];
     p.background(backgroundColor);
+    
+    // Debug: Draw a simple test rectangle to verify canvas is working
+    p.fill(255, 0, 0);
+    p.noStroke();
+    p.rect(50, 50, 100, 100);
     
     // Ensure colors are initialized
     if (!currentColors || currentColors.length === 0) {
@@ -2502,7 +2512,6 @@ const sketch = p => {
       
       // Use colorful text from language palette
       p.fill(textColors[i % textColors.length]);
-      console.log('SCROLLING DEBUG: Using colorful text from language palette');
       
       drawScrollingText(p, xPos, yPos);
       
