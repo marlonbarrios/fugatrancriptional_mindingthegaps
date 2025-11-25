@@ -2186,9 +2186,10 @@ const sketch = p => {
     // Get colors from the current language's color scheme (same as the bands)
     const languageColors = LANGUAGE_COLOR_SCHEMES[currentLanguage] || DEFAULT_COLORS;
     
-    // Dark background for Dark Enlightenment theme
-    p.background(0, 0, 0);
-    console.log('PALETTE APPLIED: Black background set for Dark Enlightenment theme');
+    // Always use language-specific color palette - stay colorful
+    const backgroundColor = languageColors[0];
+    p.background(backgroundColor);
+    console.log('PALETTE APPLIED: Colorful background maintained for language:', currentLanguage);
     
     const accentColor = isIndigenousApology ? [200, 200, 200] : languageColors[2];
     
@@ -2234,8 +2235,9 @@ const sketch = p => {
     p.textSize(baseFontSize);
     p.textLeading(baseFontSize * 1.6); // Generous line spacing for readability
     
-    // Always use pure white text for Dark Enlightenment theme
-    p.fill(255, 255, 255, 255);
+    // Use contrasting text color from language palette
+    const textColor = languageColors[2]; // Use accent color for text
+    p.fill(textColor);
     p.text(completeText, centerX - maxWidth/2, startY, maxWidth, p.height - startY - margin);
     
     // Subtle language indicator at bottom
@@ -2581,9 +2583,9 @@ const sketch = p => {
       const xPos = isVertical ? (p.width / HORIZONTAL_BAND_COUNT) * (i + 0.5) : textPositions[i];
       const yPos = isVertical ? textPositions[i] : (p.height / HORIZONTAL_BAND_COUNT) * (i + 0.5);
       
-      // Always use white text for Dark Enlightenment theme
-      p.fill(255, 255, 255);
-      console.log('SCROLLING DEBUG: Using white text for Dark Enlightenment theme');
+      // Use colorful text from language palette
+      p.fill(textColors[i % textColors.length]);
+      console.log('SCROLLING DEBUG: Using colorful text from language palette');
       
       drawScrollingText(p, xPos, yPos);
       

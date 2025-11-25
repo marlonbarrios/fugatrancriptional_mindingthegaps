@@ -1,12 +1,12 @@
-/* Dark background for Dark Enlightenment theme */
+/* Colorful background maintaining palette */
 html, body {
   margin: 0;
   padding: 0;
-  background: #000000;
+  background: #2c3e50; /* Default blue-grey from language palette */
   height: 100%;
   overflow: hidden;
   font-family: 'Helvetica', 'Arial', sans-serif;
-  color: #ffffff;
+  color: #ecf0f1; /* Light color from palette */
 }
 
 /* Centering the canvas inside the main element */
@@ -16,10 +16,10 @@ main {
   align-items: center;
   height: 100vh; /* Full height of the viewport */
   overflow: hidden; /* Hide overflow */
-  background: #000000;
+  background: #2c3e50; /* Colorful background from palette */
 }
 
 canvas {
   display: block; /* Removes default canvas margin */
-  background: #000000 !important;
+  background: transparent !important; /* Let p5.js handle colors */
 }
