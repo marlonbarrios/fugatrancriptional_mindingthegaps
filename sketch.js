@@ -2533,30 +2533,18 @@ const sketch = p => {
       lastColorSwapTime = now;
     }
     
-    // Draw bands (always show bands, but use black/white colors for limited knowledge)
+    // Draw colorful bands using language palette
     p.noStroke();
     for (let i = 0; i < HORIZONTAL_BAND_COUNT; i++) {
       let colorHex, r, g, b;
       
-      if (isShowingLimitedKnowledge) {
-        // Use black and white bands for limited knowledge
-        colorHex = (i % 2 === 0) ? '#000000' : '#222222'; // Alternating dark grays/black
-        console.log('BANDS DEBUG: Using black/gray bands for limited knowledge');
-        
-        // Trigger respectful drone sounds for unknown languages
-        if (i === 0) { // Only trigger once per frame
-          initAudio();
-          createRespectfulDrone();
-        }
-      } else {
-        // Use normal language colors
-        colorHex = currentColors[i % currentColors.length];
-        
-        // Trigger colorful drone sounds for known languages
-        if (i === 0) { // Only trigger once per frame
-          initAudio();
-          createColorfulDrone();
-        }
+      // Always use colorful language palette
+      colorHex = currentColors[i % currentColors.length];
+      
+      // Trigger colorful drone sounds for all languages
+      if (i === 0) { // Only trigger once per frame
+        initAudio();
+        createColorfulDrone();
       }
       
       // Convert hex color to RGB values
