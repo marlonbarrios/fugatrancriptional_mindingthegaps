@@ -1890,9 +1890,17 @@ const sketch = p => {
       }
     } else if (p.keyCode === 70) { // 'F' key for Fallback content (testing)
       console.log('Loading fallback content for', currentLanguage);
-      scrollingText = getFallbackContent(currentLanguage);
-      isLoading = false;
-      isGenerating = true;
+      
+      // Show loading animation briefly even for fallback content
+      isLoading = true;
+      loadingStartTime = Date.now();
+      loadingAnimationType = Math.floor(Math.random() * 4);
+      
+      setTimeout(() => {
+        scrollingText = getFallbackContent(currentLanguage);
+        isLoading = false;
+        isGenerating = true;
+      }, 1500); // Show loading for 1.5 seconds
     // Removed 'T' key testing - no longer needed without apology system
     } else if (p.keyCode === 69) { // 'E' key for Exposition
       showExposition = !showExposition;
@@ -2208,6 +2216,19 @@ const sketch = p => {
   }
 
   async function generateNewText() {
+    // Enhanced loading indicator with random animation
+    isGenerating = true;
+    isLoading = true;
+    loadingStartTime = Date.now();
+    
+    // Choose random loading animation type (0-3)
+    loadingAnimationType = Math.floor(Math.random() * 4);
+    console.log(`Loading animation type: ${loadingAnimationType} (${['Wave', 'Pulse', 'Spiral', 'Ripple'][loadingAnimationType]})`);
+    
+    // Start loading audio
+    initAudio();
+    createLoadingAudio();
+    
     try {
       const completion = await openai.chat.completions.create({
         model: "gpt-4",
@@ -4752,8 +4773,18 @@ async function generateNewText() {
   
   if (!openai) {
     console.log('OpenAI not initialized, using fallback content');
-    scrollingText = getFallbackContent(currentLanguage);
-    isLoading = false;
+    
+    // Show loading animation briefly even for fallback
+    isLoading = true;
+    loadingStartTime = Date.now();
+    loadingAnimationType = Math.floor(Math.random() * 4);
+    
+    setTimeout(() => {
+      scrollingText = getFallbackContent(currentLanguage);
+      isLoading = false;
+      hasGeneratedContent = true;
+      showingInstructions = false;
+    }, 1500);
     return;
   }
 
