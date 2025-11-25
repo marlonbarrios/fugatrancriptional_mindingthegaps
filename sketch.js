@@ -2473,9 +2473,6 @@ const sketch = p => {
   }
 
   p.draw = function() {
-    // Limit frame rate to prevent freezing
-    if (p.frameCount % 2 !== 0) return; // Skip every other frame for performance
-    
     const now = Date.now();
     const isVertical = VERTICAL_LANGUAGES.has(currentLanguage);
     
@@ -2534,61 +2531,75 @@ const sketch = p => {
       lastColorSwapTime = now;
     }
     
-    // Draw colorful bands using language palette (optimized)
+    // Draw colorful bands using language palette
     p.noStroke();
-    const bandCount = Math.min(HORIZONTAL_BAND_COUNT, 8); // Limit bands for performance
-    
-    for (let i = 0; i < bandCount; i++) {
+    for (let i = 0; i < HORIZONTAL_BAND_COUNT; i++) {
       // Use p5.js color function instead of manual hex conversion
       const colorHex = currentColors[i % currentColors.length];
-      p.fill(p.color(colorHex + '80')); // Add transparency via hex
+      p.fill(p.color(colorHex + 'CC')); // Add transparency
       
       if (isVertical) {
-        const bandWidth = p.width / bandCount;
+        const bandWidth = p.width / HORIZONTAL_BAND_COUNT;
         p.rect(bandWidth * i, 0, bandWidth, p.height);
       } else {
-        const dynamicBandHeight = p.height / bandCount;
+        const dynamicBandHeight = p.height / HORIZONTAL_BAND_COUNT;
         p.rect(0, dynamicBandHeight * i, p.width, dynamicBandHeight);
       }
     }
     
-    // Draw scrolling text (optimized and simplified)
-    const textBandCount = Math.min(bandCount, 6); // Limit text bands for performance
-    
-    for (let i = 0; i < textBandCount; i++) {
+    // Draw scrolling text with proper centering
+    for (let i = 0; i < HORIZONTAL_BAND_COUNT; i++) {
       // Skip if stopped
       if (stopTimers[i] > now) continue;
       
-      const xPos = isVertical ? (p.width / textBandCount) * (i + 0.5) : textPositions[i];
-      const yPos = isVertical ? textPositions[i] : (p.height / textBandCount) * (i + 0.5);
+      // Calculate proper positions for text centering in bands
+      let xPos, yPos;
+      if (isVertical) {
+        const bandWidth = p.width / HORIZONTAL_BAND_COUNT;
+        xPos = bandWidth * (i + 0.5); // Center of each vertical band
+        yPos = textPositions[i];
+      } else {
+        const dynamicBandHeight = p.height / HORIZONTAL_BAND_COUNT;
+        xPos = textPositions[i];
+        yPos = dynamicBandHeight * (i + 0.5); // Center of each horizontal band
+      }
       
       // Use colorful text from language palette
       p.fill(p.color(textColors[i % textColors.length]));
       
-      // Simple text drawing instead of complex scrolling function
-      p.textAlign(p.CENTER, p.CENTER);
-      p.textSize(fontSize * 0.8); // Smaller text for performance
-      p.text(scrollingText.substring(0, 50), xPos, yPos); // Limit text length
+      // Draw scrolling text with proper function
+      drawScrollingText(p, xPos, yPos);
       
-      // Simplified movement (only every few frames)
-      if (p.frameCount % 3 === 0) {
-        // Random direction changes (less frequent)
-        if (Math.random() < 0.01) { // Reduced probability
+      // Update movement (less frequent for performance)
+      if (p.frameCount % 2 === 0) {
+        // Random direction changes
+        if (Math.random() < DIRECTION_CHANGE_PROBABILITY) {
           directions[i] *= -1;
           currentSpeeds[i] = SPEED_VARIATIONS[Math.floor(Math.random() * SPEED_VARIATIONS.length)];
         }
         
-        // Update positions with bounds checking
-        textPositions[i] += (currentSpeeds[i] || 1) * (directions[i] || 1);
+        // Random stops
+        if (Math.random() < STOP_PROBABILITY) {
+          stopTimers[i] = now + STOP_DURATION;
+          continue;
+        }
         
-        // Simple boundary reset
+        // Update positions
+        textPositions[i] += currentSpeeds[i] * directions[i];
+        
+        // Reset positions based on direction with proper bounds
         if (isVertical) {
-          if (textPositions[i] < -p.height || textPositions[i] > p.height * 2) {
-            textPositions[i] = p.height / 2;
+          if (directions[i] < 0 && textPositions[i] < -p.height) {
+            textPositions[i] = p.height;
+          } else if (directions[i] > 0 && textPositions[i] > p.height * 2) {
+            textPositions[i] = -p.height;
           }
         } else {
-          if (textPositions[i] < -p.width || textPositions[i] > p.width * 2) {
-            textPositions[i] = p.width / 2;
+          const textWidth = p.textWidth(scrollingText) || 200;
+          if (directions[i] < 0 && textPositions[i] < -(textWidth + SPACING)) {
+            textPositions[i] = p.width;
+          } else if (directions[i] > 0 && textPositions[i] > p.width + SPACING) {
+            textPositions[i] = -textWidth;
           }
         }
       }
