@@ -3433,7 +3433,11 @@ function drawExpositionPanel(p) {
 }
 
 function displayLoader(p) {
-  p.clear(); // Clear background to transparent
+  // Use language-specific background color instead of transparent
+  const languageColors = LANGUAGE_COLOR_SCHEMES[currentLanguage] || DEFAULT_COLORS;
+  const backgroundColor = languageColors[0];
+  p.background(backgroundColor);
+  
   p.noStroke();
   const isVertical = VERTICAL_LANGUAGES.has(currentLanguage);
   const time = (Date.now() - loadingStartTime) * 0.001; // Time in seconds
@@ -3458,6 +3462,9 @@ function displayLoader(p) {
   
   // Add animated loading text with effects
   displayLoadingText(p, time);
+  
+  // Show loading progress indicator
+  displayLoadingProgress(p, time);
   
   loadingPhase += 0.02;
   if (loadingPhase >= 10) loadingPhase = 0;
@@ -3589,6 +3596,55 @@ function displayLoadingText(p, time) {
   
   // Create organic, flowing latent space visualization
   drawLatentSpaceFugue(p, time);
+  
+  p.pop();
+  
+  // Add text overlay
+  p.push();
+  p.textAlign(p.CENTER, p.CENTER);
+  p.textSize(20);
+  
+  // Animated loading text
+  const loadingTexts = [
+    `Generating in ${currentLanguage}...`,
+    `AI thinking in ${currentLanguage}...`,
+    `Creating content in ${currentLanguage}...`,
+    `Processing ${currentLanguage} text...`
+  ];
+  
+  const textIndex = Math.floor(time * 0.5) % loadingTexts.length;
+  const alpha = Math.sin(time * 3) * 0.3 + 0.7;
+  
+  p.fill(255, 255, 255, alpha * 255);
+  p.text(loadingTexts[textIndex], p.width / 2, p.height - 100);
+  
+  p.pop();
+}
+
+function displayLoadingProgress(p, time) {
+  p.push();
+  
+  // Progress bar at bottom
+  const barWidth = p.width * 0.6;
+  const barHeight = 6;
+  const barX = (p.width - barWidth) / 2;
+  const barY = p.height - 50;
+  
+  // Background bar
+  p.fill(255, 255, 255, 100);
+  p.rect(barX, barY, barWidth, barHeight);
+  
+  // Animated progress
+  const progress = (Math.sin(time * 2) * 0.5 + 0.5) * 0.8 + 0.2; // 20% to 100%
+  p.fill(255, 255, 255, 200);
+  p.rect(barX, barY, barWidth * progress, barHeight);
+  
+  // Animation type indicator
+  const animationNames = ['Wave', 'Pulse', 'Spiral', 'Ripple'];
+  p.textAlign(p.CENTER, p.CENTER);
+  p.textSize(14);
+  p.fill(255, 255, 255, 180);
+  p.text(`${animationNames[loadingAnimationType]} Animation • ${currentLanguage}`, p.width / 2, barY + 25);
   
   p.pop();
 }
@@ -4865,10 +4921,14 @@ async function generateNewText() {
   
   // All languages are supported - no limited knowledge handling needed
   
-  // Simple loading indicator
+  // Enhanced loading indicator with random animation
   isGenerating = true;
   isLoading = true;
   loadingStartTime = Date.now();
+  
+  // Choose random loading animation type (0-3)
+  loadingAnimationType = Math.floor(Math.random() * 4);
+  console.log(`Loading animation type: ${loadingAnimationType} (${['Wave', 'Pulse', 'Spiral', 'Ripple'][loadingAnimationType]})`);
   
   // Start loading audio
   initAudio();
