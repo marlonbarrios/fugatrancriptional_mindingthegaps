@@ -2473,6 +2473,9 @@ const sketch = p => {
   }
 
   p.draw = function() {
+    // Limit frame rate to prevent freezing
+    if (p.frameCount % 2 !== 0) return; // Skip every other frame for performance
+    
     const now = Date.now();
     const isVertical = VERTICAL_LANGUAGES.has(currentLanguage);
     
@@ -2510,10 +2513,18 @@ const sketch = p => {
     const backgroundColor = languageColors[0];
     p.background(backgroundColor);
     
-    // Ensure colors are initialized
+    // Ensure colors and arrays are initialized
     if (!currentColors || currentColors.length === 0) {
       currentColors = [...DEFAULT_COLORS];
       textColors = [...DEFAULT_COLORS];
+    }
+    
+    // Ensure text positions array is initialized
+    if (!textPositions || textPositions.length === 0) {
+      textPositions = new Array(HORIZONTAL_BAND_COUNT).fill(0).map(() => Math.random() * p.width);
+      directions = new Array(HORIZONTAL_BAND_COUNT).fill(0).map(() => Math.random() > 0.5 ? 1 : -1);
+      currentSpeeds = new Array(HORIZONTAL_BAND_COUNT).fill(0).map(() => SPEED_VARIATIONS[0]);
+      stopTimers = new Array(HORIZONTAL_BAND_COUNT).fill(0);
     }
     
     // Check if it's time to swap colors
@@ -2523,83 +2534,61 @@ const sketch = p => {
       lastColorSwapTime = now;
     }
     
-    // Draw colorful bands using language palette
+    // Draw colorful bands using language palette (optimized)
     p.noStroke();
-    for (let i = 0; i < HORIZONTAL_BAND_COUNT; i++) {
-      let colorHex, r, g, b;
-      
-      // Always use colorful language palette
-      colorHex = currentColors[i % currentColors.length];
-      
-      // Trigger colorful drone sounds for all languages
-      if (i === 0) { // Only trigger once per frame
-        initAudio();
-        createColorfulDrone();
-      }
-      
-      // Convert hex color to RGB values
-      r = parseInt(colorHex.slice(1,3), 16);
-      g = parseInt(colorHex.slice(3,5), 16);
-      b = parseInt(colorHex.slice(5,7), 16);
-      p.fill(r, g, b, 200); // Add some transparency
+    const bandCount = Math.min(HORIZONTAL_BAND_COUNT, 8); // Limit bands for performance
+    
+    for (let i = 0; i < bandCount; i++) {
+      // Use p5.js color function instead of manual hex conversion
+      const colorHex = currentColors[i % currentColors.length];
+      p.fill(p.color(colorHex + '80')); // Add transparency via hex
       
       if (isVertical) {
-        const bandWidth = p.width / HORIZONTAL_BAND_COUNT;
+        const bandWidth = p.width / bandCount;
         p.rect(bandWidth * i, 0, bandWidth, p.height);
       } else {
-        const dynamicBandHeight = p.height / HORIZONTAL_BAND_COUNT;
+        const dynamicBandHeight = p.height / bandCount;
         p.rect(0, dynamicBandHeight * i, p.width, dynamicBandHeight);
       }
     }
     
-    // Draw scrolling text with corresponding colors (always show, but use white for limited knowledge)
-    for (let i = 0; i < HORIZONTAL_BAND_COUNT; i++) {
-      const xPos = isVertical ? (p.width / HORIZONTAL_BAND_COUNT) * (i + 0.5) : textPositions[i];
-      const yPos = isVertical ? textPositions[i] : (p.height / HORIZONTAL_BAND_COUNT) * (i + 0.5);
-      
-      // Use colorful text from language palette
-      p.fill(textColors[i % textColors.length]);
-      
-      drawScrollingText(p, xPos, yPos);
-      
+    // Draw scrolling text (optimized and simplified)
+    const textBandCount = Math.min(bandCount, 6); // Limit text bands for performance
+    
+    for (let i = 0; i < textBandCount; i++) {
       // Skip if stopped
       if (stopTimers[i] > now) continue;
       
-      // Random direction and speed changes for both vertical and horizontal
-      if (Math.random() < DIRECTION_CHANGE_PROBABILITY) {
-        directions[i] *= -1;
-        currentSpeeds[i] = SPEED_VARIATIONS[Math.floor(Math.random() * SPEED_VARIATIONS.length)];
-      }
+      const xPos = isVertical ? (p.width / textBandCount) * (i + 0.5) : textPositions[i];
+      const yPos = isVertical ? textPositions[i] : (p.height / textBandCount) * (i + 0.5);
       
-      // Random stops for both vertical and horizontal
-      if (Math.random() < STOP_PROBABILITY) {
-        stopTimers[i] = now + STOP_DURATION;
-        continue;
-      }
+      // Use colorful text from language palette
+      p.fill(p.color(textColors[i % textColors.length]));
       
-      // Update positions
-      textPositions[i] += currentSpeeds[i] * directions[i];
+      // Simple text drawing instead of complex scrolling function
+      p.textAlign(p.CENTER, p.CENTER);
+      p.textSize(fontSize * 0.8); // Smaller text for performance
+      p.text(scrollingText.substring(0, 50), xPos, yPos); // Limit text length
       
-      // Reset positions based on direction
-      if (isVertical) {
-        if (directions[i] < 0) {
-          if (textPositions[i] < -p.height) {
-            textPositions[i] = p.height;
-          }
-        } else {
-          if (textPositions[i] > p.height * 2) {
-            textPositions[i] = -p.height;
-          }
+      // Simplified movement (only every few frames)
+      if (p.frameCount % 3 === 0) {
+        // Random direction changes (less frequent)
+        if (Math.random() < 0.01) { // Reduced probability
+          directions[i] *= -1;
+          currentSpeeds[i] = SPEED_VARIATIONS[Math.floor(Math.random() * SPEED_VARIATIONS.length)];
         }
-      } else {
-        // Reset positions for horizontal movement
-        if (directions[i] < 0) {
-          if (textPositions[i] < -(p.textWidth(scrollingText) + SPACING)) {
-            textPositions[i] = p.width;
+        
+        // Update positions with bounds checking
+        textPositions[i] += (currentSpeeds[i] || 1) * (directions[i] || 1);
+        
+        // Simple boundary reset
+        if (isVertical) {
+          if (textPositions[i] < -p.height || textPositions[i] > p.height * 2) {
+            textPositions[i] = p.height / 2;
           }
         } else {
-          if (textPositions[i] > p.width + SPACING) {
-            textPositions[i] = -p.textWidth(scrollingText);
+          if (textPositions[i] < -p.width || textPositions[i] > p.width * 2) {
+            textPositions[i] = p.width / 2;
           }
         }
       }
