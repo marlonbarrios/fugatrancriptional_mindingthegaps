@@ -1699,6 +1699,24 @@ function getFallbackContent(language) {
 }
 
 // Function to display homepage instructions
+function getContrastingColor(hexColor) {
+  // Convert hex to RGB
+  const hex = hexColor.replace('#', '');
+  const r = parseInt(hex.substr(0, 2), 16);
+  const g = parseInt(hex.substr(2, 2), 16);
+  const b = parseInt(hex.substr(4, 2), 16);
+  
+  // Calculate luminance
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  
+  // Return white for dark colors, black for light colors
+  if (luminance > 0.5) {
+    return '#000000'; // Black text on light background
+  } else {
+    return '#FFFFFF'; // White text on dark background
+  }
+}
+
 function drawBands(p) {
   // Draw the visual band structure (similar to main draw loop)
   const isVertical = VERTICAL_LANGUAGES.has(currentLanguage);
@@ -1805,7 +1823,6 @@ const sketch = p => {
       
       // Initialize colors based on current language
       currentColors = [...(LANGUAGE_COLOR_SCHEMES[currentLanguage] || DEFAULT_COLORS)];
-      textColors = [...currentColors];
       
       // Initialize timing for automatic generation
       lastGenerationTime = Date.now();
@@ -2258,7 +2275,6 @@ const sketch = p => {
     // Ensure colors and arrays are initialized
     if (!currentColors || currentColors.length === 0) {
       currentColors = [...DEFAULT_COLORS];
-      textColors = [...DEFAULT_COLORS];
     }
     
     // Ensure text positions array is initialized
@@ -2272,7 +2288,6 @@ const sketch = p => {
     // Check if it's time to swap colors
     if (now - lastColorSwapTime > COLOR_SWAP_INTERVAL) {
       swapRandomColors(currentColors);
-      swapRandomColors(textColors);
       lastColorSwapTime = now;
     }
     
@@ -2309,8 +2324,10 @@ const sketch = p => {
         yPos = dynamicBandHeight * (i + 0.5); // Center of each horizontal band
       }
       
-      // Use colorful text from language palette
-      p.fill(p.color(textColors[i % textColors.length]));
+      // Use contrasting colors for text readability
+      const bandColor = currentColors[i % currentColors.length];
+      const contrastColor = getContrastingColor(bandColor);
+      p.fill(contrastColor);
       
       // Draw scrolling text with proper function
       drawScrollingText(p, xPos, yPos);
