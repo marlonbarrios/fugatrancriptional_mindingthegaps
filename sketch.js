@@ -491,9 +491,9 @@ function changeLanguageInterface(language) {
 
 // Manual generation state variables (isGenerating declared at top)
 
-// Comprehensive language support - all languages OpenAI model can handle
+// Only languages that OpenAI models actually support well
 const LANGUAGES = {
-  // Major World Languages
+  // Major World Languages (Excellent Support)
   'English': 'english',
   'Spanish': 'spanish',
   'French': 'french',
@@ -525,6 +525,8 @@ const LANGUAGES = {
   'Indonesian': 'indonesian',
   'Malay': 'malay',
   'Tagalog': 'tagalog',
+  
+  // European Languages (Good Support)
   'Czech': 'czech',
   'Hungarian': 'hungarian',
   'Romanian': 'romanian',
@@ -545,10 +547,10 @@ const LANGUAGES = {
   'Galician': 'galician',
   'Welsh': 'welsh',
   'Irish': 'irish',
-  'Scottish Gaelic': 'scottish_gaelic',
   'Icelandic': 'icelandic',
-  'Faroese': 'faroese',
   'Maltese': 'maltese',
+  
+  // Central Asian Languages (Moderate Support)
   'Georgian': 'georgian',
   'Armenian': 'armenian',
   'Azerbaijani': 'azerbaijani',
@@ -558,12 +560,15 @@ const LANGUAGES = {
   'Turkmen': 'turkmen',
   'Tajik': 'tajik',
   'Mongolian': 'mongolian',
-  'Tibetan': 'tibetan',
+  
+  // Southeast Asian Languages (Good Support)
   'Burmese': 'burmese',
   'Khmer': 'khmer',
   'Lao': 'lao',
   'Sinhala': 'sinhala',
   'Nepali': 'nepali',
+  
+  // Indian Languages (Good Support)
   'Marathi': 'marathi',
   'Gujarati': 'gujarati',
   'Punjabi': 'punjabi',
@@ -572,7 +577,7 @@ const LANGUAGES = {
   'Odia': 'odia',
   'Assamese': 'assamese',
   
-  // African Languages
+  // African Languages (Moderate Support)
   'Swahili': 'swahili',
   'Yoruba': 'yoruba',
   'Zulu': 'zulu',
@@ -580,112 +585,21 @@ const LANGUAGES = {
   'Amharic': 'amharic',
   'Hausa': 'hausa',
   'Igbo': 'igbo',
-  'Twi': 'twi',
   'Somali': 'somali',
-  'Oromo': 'oromo',
   'Afrikaans': 'afrikaans',
-  'Shona': 'shona',
-  'Kinyarwanda': 'kinyarwanda',
-  'Luganda': 'luganda',
-  'Wolof': 'wolof',
-  'Fula': 'fula',
-  'Bambara': 'bambara',
-  'Lingala': 'lingala',
-  'Kikongo': 'kikongo',
-  'Tswana': 'tswana',
-  'Sesotho': 'sesotho',
-  'Ndebele': 'ndebele',
-  'Venda': 'venda',
-  'Tsonga': 'tsonga',
   
-  // Indigenous Languages of the Americas
-  'Nahuatl': 'nahuatl',
-  'Quechua': 'quechua',
-  'Maya': 'maya',
-  'Guarani': 'guarani',
-  'Navajo': 'navajo',
-  'Cherokee': 'cherokee',
-  'Cree': 'cree',
-  'Ojibwe': 'ojibwe',
-  'Inuktitut': 'inuktitut',
+  // Pacific Languages (Limited but Some Support)
   'Hawaiian': 'hawaiian',
   'Maori': 'maori',
-  'Aymara': 'aymara',
-  'Mapuche': 'mapuche',
-  'Wayuu': 'wayuu',
-  'Mixtec': 'mixtec',
-  'Zapotec': 'zapotec',
-  'Otomi': 'otomi',
-  'Tarahumara': 'tarahumara',
-  'Lakota': 'lakota',
-  'Apache': 'apache',
-  'Hopi': 'hopi',
-  'Mohawk': 'mohawk',
-  'Mi\'kmaq': 'mikmaq',
-  'Blackfoot': 'blackfoot',
-  'Tlingit': 'tlingit',
-  'Yup\'ik': 'yupik',
-  
-  // Pacific Languages
   'Samoan': 'samoan',
-  'Tongan': 'tongan',
   'Fijian': 'fijian',
-  'Tahitian': 'tahitian',
-  'Chamorro': 'chamorro',
-  'Palauan': 'palauan',
-  'Marshallese': 'marshallese',
-  'Chuukese': 'chuukese',
-  'Pohnpeian': 'pohnpeian',
-  'Kosraean': 'kosraean',
   
-  // Additional Asian Languages
-  'Javanese': 'javanese',
-  'Sundanese': 'sundanese',
-  'Balinese': 'balinese',
-  'Minangkabau': 'minangkabau',
-  'Acehnese': 'acehnese',
-  'Batak': 'batak',
-  'Bugis': 'bugis',
-  'Makassar': 'makassar',
-  'Cebuano': 'cebuano',
-  'Hiligaynon': 'hiligaynon',
-  'Waray': 'waray',
-  'Bikol': 'bikol',
-  'Kapampangan': 'kapampangan',
-  'Pangasinan': 'pangasinan',
-  'Ilocano': 'ilocano',
-  
-  // Historical and Classical Languages
-  'Latin': 'latin',
-  'Sanskrit': 'sanskrit',
-  'Ancient Greek': 'ancient_greek',
-  'Classical Chinese': 'classical_chinese',
-  'Old Norse': 'old_norse',
-  'Middle English': 'middle_english',
-  'Old English': 'old_english',
-  'Akkadian': 'akkadian',
-  'Sumerian': 'sumerian',
-  'Egyptian': 'egyptian',
-  'Coptic': 'coptic',
-  
-  // Constructed Languages
+  // Constructed Languages (Good Support)
   'Esperanto': 'esperanto',
-  'Interlingua': 'interlingua',
-  'Ido': 'ido',
-  'Volapük': 'volapuk',
-  'Klingon': 'klingon',
-  'Elvish': 'elvish',
-  'Dothraki': 'dothraki',
-  'High Valyrian': 'high_valyrian',
   
-  // Sign Languages
-  'American Sign Language': 'asl',
-  'British Sign Language': 'bsl',
-  'French Sign Language': 'fsl',
-  'German Sign Language': 'gsl',
-  'Japanese Sign Language': 'jsl',
-  'Chinese Sign Language': 'csl',
-  'International Sign': 'international_sign'
+  // Classical Languages (Good Support)
+  'Latin': 'latin',
+  'Sanskrit': 'sanskrit'
 };
 
 // Comprehensive indigenous language information database
@@ -999,21 +913,21 @@ Object.keys(LANGUAGES).forEach(lang => {
   }
 });
 
-// Language clusters organized by family and region
+// Language clusters - only well-supported languages
 const LANGUAGE_CATEGORIES = {
   major: ['English', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 'Russian', 'Chinese', 'Japanese', 'Arabic', 'Hindi'],
   romance: ['Spanish', 'French', 'Italian', 'Portuguese', 'Romanian', 'Catalan', 'Galician'],
   germanic: ['English', 'German', 'Dutch', 'Swedish', 'Norwegian', 'Danish', 'Icelandic'],
-  slavic: ['Russian', 'Polish', 'Czech', 'Ukrainian', 'Croatian', 'Serbian', 'Bulgarian'],
-  eastAsian: ['Chinese', 'Japanese', 'Korean', 'Vietnamese', 'Thai'],
+  slavic: ['Russian', 'Polish', 'Czech', 'Ukrainian', 'Croatian', 'Serbian', 'Bulgarian', 'Slovak', 'Slovenian', 'Lithuanian', 'Latvian', 'Estonian', 'Belarusian', 'Macedonian'],
+  eastAsian: ['Chinese', 'Japanese', 'Korean', 'Vietnamese', 'Thai', 'Burmese', 'Khmer', 'Lao', 'Mongolian'],
   semitic: ['Arabic', 'Hebrew'],
-  indic: ['Hindi', 'Bengali', 'Tamil', 'Telugu', 'Urdu', 'Punjabi', 'Gujarati', 'Marathi'],
-  african: ['Swahili', 'Yoruba', 'Zulu', 'Xhosa', 'Amharic', 'Hausa', 'Igbo', 'Afrikaans'],
-  indigenous_americas: ['Nahuatl', 'Quechua', 'Maya', 'Guarani', 'Navajo', 'Cherokee', 'Cree', 'Inuktitut'],
-  pacific: ['Hawaiian', 'Maori', 'Samoan', 'Tongan', 'Fijian', 'Tahitian'],
-  constructed: ['Esperanto', 'Klingon', 'Elvish', 'Dothraki'],
-  classical: ['Latin', 'Sanskrit', 'Ancient Greek', 'Classical Chinese'],
-  sign: ['American Sign Language', 'British Sign Language', 'French Sign Language']
+  indic: ['Hindi', 'Bengali', 'Tamil', 'Telugu', 'Urdu', 'Punjabi', 'Gujarati', 'Marathi', 'Kannada', 'Malayalam', 'Odia', 'Assamese', 'Nepali', 'Sinhala'],
+  african: ['Swahili', 'Yoruba', 'Zulu', 'Xhosa', 'Amharic', 'Hausa', 'Igbo', 'Somali', 'Afrikaans'],
+  pacific: ['Hawaiian', 'Maori', 'Samoan', 'Fijian'],
+  european_regional: ['Albanian', 'Basque', 'Welsh', 'Irish', 'Maltese'],
+  central_asian: ['Georgian', 'Armenian', 'Azerbaijani', 'Kazakh', 'Uzbek', 'Kyrgyz', 'Turkmen', 'Tajik'],
+  constructed: ['Esperanto'],
+  classical: ['Latin', 'Sanskrit']
 };
 
 const CATEGORY_NAMES = {
@@ -1021,21 +935,21 @@ const CATEGORY_NAMES = {
   major: 'Major World Languages (11)',
   romance: 'Romance Languages (7)',
   germanic: 'Germanic Languages (7)', 
-  slavic: 'Slavic Languages (7)',
-  eastAsian: 'East Asian Languages (5)',
+  slavic: 'Slavic Languages (14)',
+  eastAsian: 'East Asian Languages (9)',
   semitic: 'Semitic Languages (2)',
-  indic: 'Indic Languages (7)',
-  african: 'African Languages (8)',
-  indigenous_americas: 'Indigenous Americas (8)',
-  pacific: 'Pacific Languages (6)',
-  constructed: 'Constructed Languages (4)',
-  classical: 'Classical Languages (4)',
-  sign: 'Sign Languages (3)'
+  indic: 'Indic Languages (14)',
+  african: 'African Languages (9)',
+  pacific: 'Pacific Languages (4)',
+  european_regional: 'European Regional (5)',
+  central_asian: 'Central Asian (8)',
+  constructed: 'Constructed Languages (1)',
+  classical: 'Classical Languages (2)'
 };
 
-// Language display names with native scripts where applicable
+// Language display names - only for supported languages
 const LANGUAGE_DISPLAY_NAMES = {
-  // Major World Languages
+  // Major World Languages (Excellent Support)
   'English': 'English',
   'Spanish': 'Español (Spanish)',
   'French': 'Français (French)',
@@ -1068,7 +982,7 @@ const LANGUAGE_DISPLAY_NAMES = {
   'Malay': 'Bahasa Melayu (Malay)',
   'Tagalog': 'Tagalog (Filipino)',
   
-  // European Languages
+  // European Languages (Good Support)
   'Czech': 'Čeština (Czech)',
   'Hungarian': 'Magyar (Hungarian)',
   'Romanian': 'Română (Romanian)',
@@ -1089,12 +1003,10 @@ const LANGUAGE_DISPLAY_NAMES = {
   'Galician': 'Galego (Galician)',
   'Welsh': 'Cymraeg (Welsh)',
   'Irish': 'Gaeilge (Irish)',
-  'Scottish Gaelic': 'Gàidhlig (Scottish Gaelic)',
   'Icelandic': 'Íslenska (Icelandic)',
-  'Faroese': 'Føroyskt (Faroese)',
   'Maltese': 'Malti (Maltese)',
   
-  // Central Asian Languages
+  // Central Asian Languages (Moderate Support)
   'Georgian': 'ქართული (Georgian)',
   'Armenian': 'Հայերեն (Armenian)',
   'Azerbaijani': 'Azərbaycan (Azerbaijani)',
@@ -1104,16 +1016,15 @@ const LANGUAGE_DISPLAY_NAMES = {
   'Turkmen': 'Türkmençe (Turkmen)',
   'Tajik': 'Тоҷикӣ (Tajik)',
   'Mongolian': 'Монгол (Mongolian)',
-  'Tibetan': 'བོད་སྐད (Tibetan)',
   
-  // Southeast Asian Languages
+  // Southeast Asian Languages (Good Support)
   'Burmese': 'မြန်မာ (Burmese)',
   'Khmer': 'ខ្មែរ (Khmer)',
   'Lao': 'ລາວ (Lao)',
   'Sinhala': 'සිංහල (Sinhala)',
   'Nepali': 'नेपाली (Nepali)',
   
-  // Indian Languages
+  // Indian Languages (Good Support)
   'Marathi': 'मराठी (Marathi)',
   'Gujarati': 'ગુજરાતી (Gujarati)',
   'Punjabi': 'ਪੰਜਾਬੀ (Punjabi)',
@@ -1122,7 +1033,7 @@ const LANGUAGE_DISPLAY_NAMES = {
   'Odia': 'ଓଡ଼ିଆ (Odia)',
   'Assamese': 'অসমীয়া (Assamese)',
   
-  // African Languages
+  // African Languages (Moderate Support)
   'Swahili': 'Kiswahili (Swahili)',
   'Yoruba': 'Yorùbá (Yoruba)',
   'Zulu': 'isiZulu (Zulu)',
@@ -1130,112 +1041,21 @@ const LANGUAGE_DISPLAY_NAMES = {
   'Amharic': 'አማርኛ (Amharic)',
   'Hausa': 'Hausa (Hausa)',
   'Igbo': 'Igbo (Igbo)',
-  'Twi': 'Twi (Twi)',
   'Somali': 'Af-Soomaali (Somali)',
-  'Oromo': 'Afaan Oromoo (Oromo)',
   'Afrikaans': 'Afrikaans (Afrikaans)',
-  'Shona': 'chiShona (Shona)',
-  'Kinyarwanda': 'Ikinyarwanda (Kinyarwanda)',
-  'Luganda': 'Luganda (Luganda)',
-  'Wolof': 'Wolof (Wolof)',
-  'Fula': 'Fulfulde (Fula)',
-  'Bambara': 'Bamanankan (Bambara)',
-  'Lingala': 'Lingála (Lingala)',
-  'Kikongo': 'Kikongo (Kikongo)',
-  'Tswana': 'Setswana (Tswana)',
-  'Sesotho': 'Sesotho (Sesotho)',
-  'Ndebele': 'isiNdebele (Ndebele)',
-  'Venda': 'Tshivenḓa (Venda)',
-  'Tsonga': 'Xitsonga (Tsonga)',
   
-  // Indigenous Languages of the Americas
-  'Nahuatl': 'Nāhuatl (Nahuatl/Aztec)',
-  'Quechua': 'Runasimi (Quechua)',
-  'Maya': 'Maaya T\'aan (Maya)',
-  'Guarani': 'Avañe\'ẽ (Guaraní)',
-  'Navajo': 'Diné Bizaad (Navajo)',
-  'Cherokee': 'ᏣᎳᎩ ᎦᏬᏂᎯᏍᏗ (Cherokee)',
-  'Cree': 'ᓀᐦᐃᔭᐍᐏᐣ (Cree)',
-  'Ojibwe': 'Anishinaabemowin (Ojibwe)',
-  'Inuktitut': 'ᐃᓄᒃᑎᑐᑦ (Inuktitut)',
+  // Pacific Languages (Limited but Some Support)
   'Hawaiian': 'ʻŌlelo Hawaiʻi (Hawaiian)',
   'Maori': 'Te Reo Māori (Māori)',
-  'Aymara': 'Aymar Aru (Aymara)',
-  'Mapuche': 'Mapudungun (Mapuche)',
-  'Wayuu': 'Wayuunaiki (Wayuu)',
-  'Mixtec': 'Tu\'un Savi (Mixtec)',
-  'Zapotec': 'Diidxazá (Zapotec)',
-  'Otomi': 'Hñähñu (Otomí)',
-  'Tarahumara': 'Rarámuri (Tarahumara)',
-  'Lakota': 'Lakȟótiyapi (Lakota)',
-  'Apache': 'Ndé Biyáti\' (Apache)',
-  'Hopi': 'Hopilavayi (Hopi)',
-  'Mohawk': 'Kanienʼkéha (Mohawk)',
-  'Mi\'kmaq': 'Mi\'kmawi\'simk (Mi\'kmaq)',
-  'Blackfoot': 'Siksiká (Blackfoot)',
-  'Tlingit': 'Lingít (Tlingit)',
-  'Yup\'ik': 'Yugtun (Yup\'ik)',
-  
-  // Pacific Languages
   'Samoan': 'Gagana Sāmoa (Samoan)',
-  'Tongan': 'Lea Fakatonga (Tongan)',
   'Fijian': 'Na Vosa Vakaviti (Fijian)',
-  'Tahitian': 'Reo Tahiti (Tahitian)',
-  'Chamorro': 'Fino\' Chamoru (Chamorro)',
-  'Palauan': 'Tekoi er a Belau (Palauan)',
-  'Marshallese': 'Kajin M̧ajeļ (Marshallese)',
-  'Chuukese': 'Chuukese (Chuukese)',
-  'Pohnpeian': 'Pohnpeian (Pohnpeian)',
-  'Kosraean': 'Kosraean (Kosraean)',
   
-  // Additional Asian Languages
-  'Javanese': 'Basa Jawa (Javanese)',
-  'Sundanese': 'Basa Sunda (Sundanese)',
-  'Balinese': 'Basa Bali (Balinese)',
-  'Minangkabau': 'Baso Minangkabau (Minangkabau)',
-  'Acehnese': 'Bahsa Acèh (Acehnese)',
-  'Batak': 'Hata Batak (Batak)',
-  'Bugis': 'Basa Ugi (Bugis)',
-  'Makassar': 'Basa Mangkasara\' (Makassar)',
-  'Cebuano': 'Binisayâ (Cebuano)',
-  'Hiligaynon': 'Ilonggo (Hiligaynon)',
-  'Waray': 'Winaray (Waray)',
-  'Bikol': 'Bikol (Bikol)',
-  'Kapampangan': 'Kapampangan (Kapampangan)',
-  'Pangasinan': 'Salitan Pangasinan (Pangasinan)',
-  'Ilocano': 'Pagsasao nga Ilokano (Ilocano)',
-  
-  // Historical and Classical Languages
-  'Latin': 'Lingua Latina (Latin)',
-  'Sanskrit': 'संस्कृतम् (Sanskrit)',
-  'Ancient Greek': 'Ἀρχαία Ἑλληνική (Ancient Greek)',
-  'Classical Chinese': '文言文 (Classical Chinese)',
-  'Old Norse': 'Dǫnsk tunga (Old Norse)',
-  'Middle English': 'Middle English',
-  'Old English': 'Ænglisc (Old English)',
-  'Akkadian': '𒀝𒅗𒁺𒌑 (Akkadian)',
-  'Sumerian': '𒅴𒂠 (Sumerian)',
-  'Egyptian': 'r n kmt (Egyptian)',
-  'Coptic': 'ϯⲙⲉⲧⲣⲉⲙⲛ̀ⲭⲏⲙⲓ (Coptic)',
-  
-  // Constructed Languages
+  // Constructed Languages (Good Support)
   'Esperanto': 'Esperanto',
-  'Interlingua': 'Interlingua',
-  'Ido': 'Ido',
-  'Volapük': 'Volapük',
-  'Klingon': 'tlhIngan Hol (Klingon)',
-  'Elvish': 'Sindarin/Quenya (Elvish)',
-  'Dothraki': 'Lekh Dothraki (Dothraki)',
-  'High Valyrian': 'Valyrio Eglie (High Valyrian)',
   
-  // Sign Languages
-  'American Sign Language': 'ASL (American Sign Language)',
-  'British Sign Language': 'BSL (British Sign Language)',
-  'French Sign Language': 'LSF (French Sign Language)',
-  'German Sign Language': 'DGS (German Sign Language)',
-  'Japanese Sign Language': 'JSL (Japanese Sign Language)',
-  'Chinese Sign Language': 'CSL (Chinese Sign Language)',
-  'International Sign': 'IS (International Sign)'
+  // Classical Languages (Good Support)
+  'Latin': 'Lingua Latina (Latin)',
+  'Sanskrit': 'संस्कृतम् (Sanskrit)'
 };
 
 // All supported languages for the system
@@ -1951,14 +1771,12 @@ let showLanguageInfo = false;
 let infoStartTime = 0;
 // Removed content caching - always generate fresh content
 
-// Languages that traditionally use vertical writing systems
+// Languages that traditionally use vertical writing systems (only supported ones)
 const VERTICAL_LANGUAGES = new Set([
   'Chinese',
   'Japanese', 
   'Korean',
-  'Mongolian',
-  'Classical Chinese',
-  'Tibetan'
+  'Mongolian'
 ]);
 
 // Add constants for band counts
