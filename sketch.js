@@ -6,7 +6,7 @@ const openAIKey = import.meta.env.VITE_OPENAI_KEY;
 let openai;
 let isLoading = false;
 let isGenerating = false;
-let isShowingLimitedKnowledge = false; // Flag for limited knowledge responses
+// Removed limited knowledge system - all languages are well-supported
 // Application states
 let appState = 'ANIMATION'; // Start directly in animation mode
 let homeAnimationTime = 0;
@@ -126,7 +126,7 @@ let currentAudioState = 'none'; // 'loading', 'reading', 'colorful', 'respectful
 let loadingOscillators = [];
 let readingOscillators = [];   
 let droneOscillators = [];
-let currentDroneMode = null; // 'colorful' or 'respectful'   
+let currentDroneMode = null; // Only 'colorful' mode needed   
 let activeOscillators = null;
 
 // Add new constants and variables for dynamic movement
@@ -1992,11 +1992,7 @@ const sketch = p => {
       scrollingText = getFallbackContent(currentLanguage);
       isLoading = false;
       isGenerating = true;
-    } else if (p.keyCode === 84) { // 'T' key for Testing black/white mode
-      console.log('TESTING: Forcing black/white mode');
-      isShowingLimitedKnowledge = true;
-      scrollingText = "I apologize, but I have limited knowledge of this language and cannot generate authentic content. As an AI model, I am only trained in approximately 17% of the world's living languages.";
-      isLoading = false;
+    // Removed 'T' key testing - no longer needed without apology system
     } else if (p.keyCode === 69) { // 'E' key for Exposition
       showExposition = !showExposition;
       if (showExposition) {
@@ -4800,8 +4796,7 @@ async function generateNewText() {
   console.log(`OpenAI initialized: ${!!openai}`);
   console.log(`OpenAI key available: ${!!openAIKey}`);
   
-  const isWellSupported = WELL_SUPPORTED_LANGUAGES.includes(currentLanguage);
-  console.log(`Language well supported: ${isWellSupported}`);
+  // All 5 European languages are well-supported by the AI model
   
   if (!openai) {
     console.log('OpenAI not initialized, using fallback content');
@@ -4810,33 +4805,11 @@ async function generateNewText() {
     return;
   }
 
-  // Check if language is well supported
-  if (!isWellSupported) {
-    console.log(`LANGUAGE CHECK: ${currentLanguage} not in WELL_SUPPORTED_LANGUAGES list`);
-    console.log(`FALLBACK TRIGGERED: Responding in English only`);
-    
-    // CRITICAL: Set the limited knowledge flag to trigger black/white palette
-    isShowingLimitedKnowledge = true;
-    console.log(`FLAG SET: isShowingLimitedKnowledge = true`);
-    
-    scrollingText = `I apologize, but I have limited knowledge of ${currentLanguage} and cannot generate authentic content in this language. As an AI model, I am only trained in approximately 17% of the world's living languages, making my knowledge limited compared to the full linguistic diversity of humanity. I can explore concepts in English or another language I know better.`;
-    console.log(`FALLBACK TEXT SET: ${scrollingText.substring(0, 50)}...`);
-    console.log(`FALLBACK DEBUG: isShowingLimitedKnowledge should be true:`, isShowingLimitedKnowledge);
-    isLoading = false;
-    isGenerating = false; // Stop any loading animation
-    
-    // Trigger respectful drone sounds for unknown language
-    initAudio();
-    createRespectfulDrone();
-    
-    return;
-  }
+  // All languages in the system are well-supported, no apology needed
 
   console.log(`Generating content in ${currentLanguage}`);
   
-  // Clear limited knowledge flag for normal generation (only for supported languages)
-  console.log('GENERATION DEBUG: Clearing limited knowledge flag for supported language generation');
-  isShowingLimitedKnowledge = false;
+  // All languages are supported - no limited knowledge handling needed
   
   // Simple loading indicator
   isGenerating = true;
