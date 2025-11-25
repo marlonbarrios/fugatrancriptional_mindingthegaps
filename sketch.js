@@ -54,7 +54,9 @@ function selectLanguageManually(language) {
   generateNewText();
 }
 
-let scrollingText = "press SPACE for fugue mode • press L for language • press E for exposition • dark enlightenment: where algorithms meet ideology • automatic generation every 20 seconds • synthetic consciousness examining digital power structures"; 
+let scrollingText = ""; // Start empty, will show instructions until AI generates content
+let showingInstructions = true; // Flag to track if we're showing instructions
+let hasGeneratedContent = false; // Flag to track if AI has generated content yet 
 let textPositions = []; // Remove fixed size initialization
 const SCROLL_SPEED = 3;
 const SPACING = 200;
@@ -1137,7 +1139,7 @@ function stopRandomLanguageMode() {
   }
   
   // Restore normal instruction text
-  scrollingText = "press SPACE for fugue mode • press L for language • press E for exposition • dark enlightenment: where algorithms meet ideology • automatic generation every 20 seconds • synthetic consciousness examining digital power structures";
+  scrollingText = "press SPACE for fugue mode • press L for language • press E for exposition • transcriptional fugue: AI language exploration • automatic generation every 20 seconds • testing computational linguistics across world languages";
   
   console.log('FUGUE MODE: Mode deactivated');
 }
@@ -1849,6 +1851,71 @@ function getFallbackContent(language) {
   }
 }
 
+// Function to display homepage instructions
+function drawHomepageInstructions(p) {
+  p.push();
+  
+  // Semi-transparent background
+  p.fill(0, 0, 0, 150);
+  p.rect(0, 0, p.width, p.height);
+  
+  // Center the instructions
+  p.fill(255);
+  p.textAlign(p.CENTER, p.CENTER);
+  p.textSize(24);
+  
+  const instructions = [
+    "TRANSCRIPTIONAL FUGUE",
+    "",
+    "AI Language Exploration Installation",
+    "by Marlon Barrios Solano",
+    "",
+    "CONTROLS:",
+    "SPACE → Enter fugue mode (auto language cycling)",
+    "L → Change language manually", 
+    "E → Show exposition",
+    "Mouse Hold → Reading mode",
+    "",
+    "• 93 supported languages",
+    "• AI generates text every 20 seconds",
+    "• Exploring computational linguistics",
+    "• Testing AI across world languages",
+    "",
+    "Generating initial content..."
+  ];
+  
+  const lineHeight = 35;
+  const startY = p.height / 2 - (instructions.length * lineHeight) / 2;
+  
+  instructions.forEach((line, i) => {
+    if (line === "") return; // Skip empty lines
+    
+    if (line.includes("TRANSCRIPTIONAL FUGUE")) {
+      p.textSize(32);
+      p.fill(255, 255, 100); // Yellow highlight
+    } else if (line.includes("CONTROLS:")) {
+      p.textSize(28);
+      p.fill(100, 255, 100); // Green highlight
+    } else if (line.includes("→")) {
+      p.textSize(20);
+      p.fill(200, 200, 255); // Light blue for controls
+    } else if (line.includes("•")) {
+      p.textSize(18);
+      p.fill(255, 200, 200); // Light red for features
+    } else if (line.includes("Generating")) {
+      p.textSize(20);
+      p.fill(255, 255, 0); // Yellow for status
+    } else {
+      p.textSize(24);
+      p.fill(255); // White for regular text
+    }
+    
+    p.text(line, p.width / 2, startY + i * lineHeight);
+  });
+  
+  p.pop();
+}
+
 const sketch = p => {
   // Helper function for swapping random colors
   function swapRandomColors(colorArray) {
@@ -2475,6 +2542,12 @@ const sketch = p => {
   p.draw = function() {
     const now = Date.now();
     const isVertical = VERTICAL_LANGUAGES.has(currentLanguage);
+    
+    // Show homepage instructions until AI generates content
+    if (showingInstructions && !hasGeneratedContent && !isLoading) {
+      drawHomepageInstructions(p);
+      return;
+    }
     
     // Check for reading mode first
     if (readingMode) {
@@ -4804,9 +4877,9 @@ async function generateNewText() {
         role: "user", 
         content: `CRITICAL LANGUAGE REQUIREMENT: Generate text EXCLUSIVELY in ${currentLanguage} language. Use proper script, grammar, and vocabulary for ${currentLanguage}. DO NOT mix languages. Current target language: ${currentLanguage}.
 
-DARK ENLIGHTENMENT INSTALLATION PROMPT:
+TRANSCRIPTIONAL FUGUE INSTALLATION PROMPT:
 
-Generate a poetic-critical text that explores the intersection of technology, ideology, and power in a speculative, synthetic world. Draw on references to cybernetics (such as Project Cybersyn), post-democracy and Dark Enlightenment philosophies (Mencius Moldbug, Nick Bostrom's Singleton), the histories of colonialism and eugenics (Francis Galton, "good genes"), and the logics of surveillance capitalism (Palantir, attention economies, influencer culture).
+Generate a poetic-critical text that explores the boundaries and limitations of artificial intelligence in understanding human language and culture. Focus on the gaps in computational linguistics - the spaces between what AI can and cannot comprehend about the richness of human expression across different languages and cultures.
 
 Use a tone that moves between manifesto, liturgy, and techno-poetics, mixing academic analysis with lyrical, fractured imagery. The text should evoke aesthetics from German techno, Bauhaus modernism, Warholian pop, and surreal performance art.
 
@@ -4818,7 +4891,7 @@ The style should be experimental, recursive, and unsettling — a manifesto-song
 
 Generate 200-300 words of continuous flowing text in ${currentLanguage} with no line breaks, suitable for scrolling display in a techno-installation environment.
 
-LINGUISTIC META-REFLECTION: As you generate this content in ${currentLanguage}, weave in reflections on the computational beauty and complexity of this specific language - its unique grammatical structures, phonetic patterns, cultural expressions. Also acknowledge the colonial bias of large language models: how AI systems like yourself are primarily trained on data from developed countries and major languages, creating a digital linguistic hierarchy that mirrors historical power structures. Reflect on how this technological limitation perpetuates the marginalization of countless languages, dialects, and ways of knowing that remain invisible to computational systems. Let this awareness flow naturally into your Dark Enlightenment critique - the algorithm as a continuation of colonial epistemicide.`
+LINGUISTIC META-REFLECTION: As you generate this content in ${currentLanguage}, weave in reflections on the computational beauty and complexity of this specific language - its unique grammatical structures, phonetic patterns, cultural expressions. Also acknowledge the limitations of large language models: how AI systems like yourself have varying degrees of knowledge across different languages, with some languages being well-represented in training data while others remain underrepresented. Reflect on these gaps in computational linguistics - the spaces where AI understanding becomes limited or uncertain. Let this awareness flow naturally into your exploration of language boundaries and the ongoing effort to bridge the gaps between human linguistic diversity and artificial intelligence capabilities.`
       }],
       max_tokens: 400,
       temperature: 0.9
@@ -4915,6 +4988,10 @@ LINGUISTIC META-REFLECTION: As you generate this content in ${currentLanguage}, 
       .replace(/\n/g, " ");
     // Note: We keep the original casing to preserve detection phrases
     
+    // Mark that we have generated content and hide instructions
+    hasGeneratedContent = true;
+    showingInstructions = false;
+    
     console.log(`Generated text in ${currentLanguage}:`, scrollingText.substring(0, 100));
     console.log(`Has limited knowledge marker:`, hasLimitedKnowledge);
     console.log(`Contains marker in scrollingText:`, scrollingText.toLowerCase().includes('[limited_knowledge_response]'));
@@ -4922,6 +4999,9 @@ LINGUISTIC META-REFLECTION: As you generate this content in ${currentLanguage}, 
   } catch (error) {
     console.error('Error generating text:', error);
     scrollingText = getFallbackContent(currentLanguage);
+    // Still mark as generated even with fallback
+    hasGeneratedContent = true;
+    showingInstructions = false;
   }
   
   // Start reading audio when text is ready
