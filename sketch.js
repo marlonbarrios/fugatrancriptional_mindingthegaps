@@ -811,94 +811,29 @@ Object.keys(LANGUAGES).forEach(lang => {
   }
 });
 
-// Language clusters based on proximity and model fluency (only well-known languages)
+// Language clusters for the 5 European languages
 const LANGUAGE_CATEGORIES = {
-  romance: ['Spanish', 'French', 'Italian', 'Portuguese'],
-  germanic: ['English', 'German', 'Dutch'], 
-  slavic: ['Russian', 'Polish'],
-  eastAsian: ['Chinese', 'Japanese', 'Korean'],
-  semitic: ['Arabic', 'Hebrew'],
-  other: ['Hindi', 'Swedish', 'Greek', 'Turkish', 'Vietnamese', 'Thai', 'Swahili']
+  romance: ['Spanish', 'French', 'Italian'],
+  germanic: ['English', 'German']
 };
 
 const CATEGORY_NAMES = {
-  all: 'All Languages (21)',
-  romance: 'Romance (4)',
-  germanic: 'Germanic (3)',
-  slavic: 'Slavic (2)',
-  eastAsian: 'East Asian (3)',
-  semitic: 'Semitic (2)',
-  other: 'Other (7)'
+  all: 'All Languages (5)',
+  romance: 'Romance (3)',
+  germanic: 'Germanic (2)'
 };
 
-// Language display names with complete, proper names
+// Language display names for the 5 European languages
 const LANGUAGE_DISPLAY_NAMES = {
-  // Major World Languages
   'English': 'English',
-  'Spanish': 'Español (Spanish)',
-  'French': 'Français (French)', 
   'German': 'Deutsch (German)',
+  'French': 'Français (French)', 
   'Italian': 'Italiano (Italian)',
-  'Portuguese': 'Português (Portuguese)',
-  'Dutch': 'Nederlands (Dutch)',
-  'Russian': 'Русский (Russian)',
-  'Chinese': '中文 (Chinese - Mandarin)',
-  'Japanese': '日本語 (Japanese)',
-  'Korean': '한국어 (Korean)',
-  'Arabic': 'العربية (Arabic)',
-  'Hindi': 'हिन्दी (Hindi)',
-  'Swedish': 'Svenska (Swedish)',
-  'Norwegian': 'Norsk (Norwegian)',
-  'Danish': 'Dansk (Danish)',
-  'Finnish': 'Suomi (Finnish)',
-  'Polish': 'Polski (Polish)',
-  'Czech': 'Čeština (Czech)',
-  'Hungarian': 'Magyar (Hungarian)',
-  'Romanian': 'Română (Romanian)',
-  'Bulgarian': 'Български (Bulgarian)',
-  'Greek': 'Ελληνικά (Greek)',
-  'Turkish': 'Türkçe (Turkish)',
-  'Hebrew': 'עברית (Hebrew)',
-  'Thai': 'ไทย (Thai)',
-  'Vietnamese': 'Tiếng Việt (Vietnamese)',
-  'Indonesian': 'Bahasa Indonesia (Indonesian)',
-  'Malay': 'Bahasa Melayu (Malay)',
-  'Ukrainian': 'Українська (Ukrainian)',
-  'Croatian': 'Hrvatski (Croatian)',
-  'Serbian': 'Српски (Serbian)',
-  'Slovak': 'Slovenčina (Slovak)',
-  'Slovenian': 'Slovenščina (Slovenian)',
-  'Catalan': 'Català (Catalan)',
-  'Persian': 'فارسی (Persian/Farsi)',
-  'Urdu': 'اردو (Urdu)',
-  'Bengali': 'বাংলা (Bengali)',
-  'Tamil': 'தமிழ் (Tamil)',
-  'Telugu': 'తెలుగు (Telugu)',
-  'Marathi': 'मराठी (Marathi)',
-  'Gujarati': 'ગુજરાતી (Gujarati)',
-  'Punjabi': 'ਪੰਜਾਬੀ (Punjabi)',
-  'Malayalam': 'മലയാളം (Malayalam)',
-  'Kannada': 'ಕನ್ನಡ (Kannada)',
-  'Nepali': 'नेपाली (Nepali)',
-  'Sinhala': 'සිංහල (Sinhala)',
-  'Burmese': 'မြန်မာဘာသာ (Burmese)',
-  'Tagalog': 'Tagalog (Filipino)',
-  'Swahili': 'Kiswahili (Swahili)',
-  'Afrikaans': 'Afrikaans',
-  'Basque': 'Euskera (Basque)',
-  'Welsh': 'Cymraeg (Welsh)',
-  'Irish': 'Gaeilge (Irish)',
-  'Lithuanian': 'Lietuvių (Lithuanian)',
-  'Latvian': 'Latviešu (Latvian)',
-  'Estonian': 'Eesti (Estonian)',
-  'Albanian': 'Shqip (Albanian)',
-  'Macedonian': 'Македонски (Macedonian)',
-  'Bosnian': 'Bosanski (Bosnian)',
-  'Icelandic': 'Íslenska (Icelandic)',
-  'Armenian': 'Հայերեն (Armenian)',
-  'Georgian': 'ქართული (Georgian)',
-  'Azerbaijani': 'Azərbaycan (Azerbaijani)',
-  'Kazakh': 'Қазақша (Kazakh)',
+  'Spanish': 'Español (Spanish)'
+};
+
+// Language keys for system use (same as before for compatibility)
+const SIMPLE_LANGUAGES = Object.keys(LANGUAGE_DISPLAY_NAMES);
   'Uzbek': 'O\'zbek (Uzbek)',
   
   // North American Indigenous Languages
@@ -1067,11 +1002,6 @@ const LANGUAGE_DISPLAY_NAMES = {
   'Ladino': 'Judeo-Español (Ladino)',
   'Kinyarwanda': 'Ikinyarwanda (Kinyarwanda)',
   'Luganda': 'Luganda (Luganda)',
-  'Shona': 'chiShona (Shona)'
-};
-
-// Language keys for system use (same as before for compatibility)
-const SIMPLE_LANGUAGES = Object.keys(LANGUAGE_DISPLAY_NAMES);
 
 // Languages that are well-supported by the model
 const WELL_SUPPORTED_LANGUAGES = [
@@ -1088,9 +1018,9 @@ let currentLanguage = 'English'; // Start with English as base language
 // Language menu state
 let languageMenuOpen = false;
 
-// Simple function to get languages (no categories)
+// Simple function to get languages - only the 5 European languages
 function getLanguagesForMenu() {
-  return SIMPLE_LANGUAGES;
+  return Object.keys(LANGUAGES); // Returns: English, German, French, Italian, Spanish
 }
 
 // Function to get linguistically proximate language (simplified)
