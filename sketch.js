@@ -4761,7 +4761,8 @@ function createSwooshEffect(filter, gain) {
 
 // Display loading animation (function already exists earlier in file)
 
-// Generate new text using OpenAI API
+// Generate new text using OpenAI API - DISABLED (using internal function instead)
+/*
 async function generateNewText() {
   console.log(`=== GENERATE NEW TEXT CALLED ===`);
   console.log(`GENERATION SYNC: Current language: ${currentLanguage}`);
@@ -4947,6 +4948,7 @@ LINGUISTIC META-REFLECTION: As you generate this content in ${currentLanguage}, 
   
   isLoading = false;
 }
+*/
 
 function onReady() {
   // Initialize OpenAI if API key is provided
