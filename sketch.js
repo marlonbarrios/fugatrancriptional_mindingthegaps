@@ -1112,18 +1112,22 @@ function startRandomLanguageMode() {
   randomModeStartTime = Date.now();
   lastRandomLanguageChangeTime = Date.now();
   
+  // Hide instructions and start generating in current language first
+  showingInstructions = false;
+  
   // Show fugue mode message briefly
-  scrollingText = "FUGUE MODE ACTIVE • selecting random language...";
+  scrollingText = `FUGUE MODE ACTIVE • generating in ${currentLanguage}...`;
   
   // Set up interval to switch languages every 30 seconds
   randomModeInterval = setInterval(() => {
     switchToRandomLanguage();
   }, RANDOM_MODE_DURATION);
   
-  // After brief display, switch to random language with loading animation
+  // Start generating immediately in current language
   setTimeout(() => {
-    switchToRandomLanguage();
-  }, 1500); // Show fugue message for 1.5 seconds, then start loading
+    console.log(`FUGUE MODE: Starting with current language: ${currentLanguage}`);
+    generateNewText(); // Generate in current language first
+  }, 1500); // Show fugue message for 1.5 seconds, then start generating
   
   console.log('FUGUE MODE: Mode activated, will change languages every 30 seconds');
 }
