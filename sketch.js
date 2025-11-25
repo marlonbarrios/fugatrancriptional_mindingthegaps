@@ -1717,6 +1717,34 @@ function getContrastingColor(hexColor) {
   }
 }
 
+function drawScrollingText(p, xPos, yPos, bandIndex) {
+  if (!scrollingText || scrollingText.length === 0) return;
+  
+  // Create blinking effect with different timing for each band
+  const time = Date.now() * 0.001; // Convert to seconds
+  const blinkSpeed = 2 + (bandIndex * 0.3); // Different blink speed per band
+  const alpha = (Math.sin(time * blinkSpeed) + 1) * 0.5; // Oscillates between 0 and 1
+  const minAlpha = 0.3; // Minimum visibility
+  const finalAlpha = minAlpha + (alpha * (1 - minAlpha)); // Range from 0.3 to 1.0
+  
+  // Apply alpha to current fill color
+  const currentFill = p.drawingContext.fillStyle;
+  if (currentFill.includes('#')) {
+    // Handle hex colors
+    const hex = currentFill.replace('#', '');
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+    p.fill(r, g, b, finalAlpha * 255);
+  } else {
+    // Fallback to white with alpha
+    p.fill(255, 255, 255, finalAlpha * 255);
+  }
+  
+  // Draw the text
+  p.text(scrollingText, xPos, yPos);
+}
+
 function drawBands(p) {
   // Draw the visual band structure (similar to main draw loop)
   const isVertical = VERTICAL_LANGUAGES.has(currentLanguage);
@@ -2329,8 +2357,8 @@ const sketch = p => {
       const contrastColor = getContrastingColor(bandColor);
       p.fill(contrastColor);
       
-      // Draw scrolling text with proper function
-      drawScrollingText(p, xPos, yPos);
+      // Draw scrolling text with blinking effect
+      drawScrollingText(p, xPos, yPos, i);
       
       // Update movement (less frequent for performance)
       if (p.frameCount % 2 === 0) {
